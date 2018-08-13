@@ -1,1 +1,58 @@
-services: 
+services:
+
+    yan.sms_sender.sender.sms:
+        class: Yan\Bundle\SmsSenderBundle\Sender\SmsSender
+        arguments:
+            config: '@yan.sms_sender.tools.accessor.configuration'
+            smsGateways:
+                - '@yan.sms_sender.gateway.sms.engage_spark'
+                - '@yan.sms_sender.gateway.sms.semaphore.regular'
+                - '@yan.sms_sender.gateway.sms.semaphore.priority'
+
+    yan.sms_sender.composer.sms:
+        class: Yan\Bundle\SmsSenderBundle\Composer\SmsComposer
+        arguments:
+            config: '@yan.sms_sender.tools.accessor.configuration'
+
+    yan.sms_sender.gateway.sms:
+        class: Yan\Bundle\SmsSenderBundle\Gateway\SmsGateway
+        arguments:
+            config: '@yan.sms_sender.tools.accessor.configuration'
+            curl: '@yan.semaphore_sms.curl'
+            smsComposer: '@yan.sms_sender.composer.sms'
+
+    yan.sms_sender.gateway.sms.engage_spark:
+        class: Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway
+        arguments:
+            config: '@yan.sms_sender.tools.accessor.configuration'
+            curl: '@yan.semaphore_sms.curl'
+            smsComposer: '@yan.sms_sender.composer.sms'
+
+    yan.sms_sender.gateway.sms.semaphore:
+        class: Yan\Bundle\SmsSenderBundle\Gateway\SemaphoreSmsGateway
+        arguments:
+            config: '@yan.sms_sender.tools.accessor.configuration'
+            curl: '@yan.semaphore_sms.curl'
+            smsComposer: '@yan.sms_sender.composer.sms'
+
+    yan.sms_sender.gateway.sms.semaphore.regular:
+        class: Yan\Bundle\SmsSenderBundle\Gateway\SemaphoreRegularSmsGateway
+        arguments:
+            config: '@yan.sms_sender.tools.accessor.configuration'
+            curl: '@yan.semaphore_sms.curl'
+            smsComposer: '@yan.sms_sender.composer.sms'
+
+    yan.sms_sender.gateway.sms.semaphore.priority:
+        class: Yan\Bundle\SmsSenderBundle\Gateway\SemaphorePrioritySmsGateway
+        arguments:
+            config: '@yan.sms_sender.tools.accessor.configuration'
+            curl: '@yan.semaphore_sms.curl'
+            smsComposer: '@yan.sms_sender.composer.sms'
+
+    yan.sms_sender.tools.accessor.configuration:
+        class: Yan\Bundle\SmsSenderBundle\Tools\Accessor\ConfigurationAccessor
+        arguments:
+            container: '@service_container'
+
+    yan.semaphore_sms.curl:
+        class: Yan\Bundle\SmsSenderBundle\Tools\Request\Curl

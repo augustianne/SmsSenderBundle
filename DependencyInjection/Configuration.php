@@ -18,7 +18,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * Bundle configuration
  *
  * @author  Yan Barreta
- * @version dated: April 30, 2015 3:55:29 PM
+ * @version dated: August 7, 2018
  */
 class Configuration implements ConfigurationInterface
 {
@@ -32,25 +32,26 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->beforeNormalization()
-                ->ifTrue(function ($v) { return is_array($v) && !array_key_exists('senders', $v) && !array_key_exists('sender', $v); })
+                ->ifTrue(function ($v) { return is_array($v) && !array_key_exists('gateways', $v); })
                 ->then(function ($v) {
                     $sender = array();
                     foreach ($v as $key => $value) {
-                        if ('default_sender' == $key) {
+                        if ('default_gateway_id' == $key) {
                             continue;
                         }
                         $sender[$key] = $v[$key];
                         unset($v[$key]);
                     }
-                    $v['default_sender'] = isset($v['default_sender']) ? (string) $v['default_sender'] : 'default';
-                    $v['senders'] = array($v['default_sender'] => $sender);
+                    $v['default_gateway_id'] = isset($v['default_gateway_id']) ? (string) $v['default_gateway_id'] : 'default';
+                    $v['gateways'] = array($v['default_gateway_id'] => $sender);
 
                     return $v;
                 })
             ->end()
             ->children()
                 ->booleanNode('enable_delivery')->defaultTrue()->end()
-                ->scalarNode('default_sender')->isRequired()->end()
+                ->scalarNode('default_gateway_id')->isRequired()->end()
+                ->scalarNode('backup_gateway_id')->defaultNull()->end()
                 ->append($this->getSendersNode())
             ->end();
 
@@ -60,18 +61,31 @@ class Configuration implements ConfigurationInterface
     private function getSendersNode()
     {
         $treeBuilder = new TreeBuilder();
-        $node = $treeBuilder->root('senders');
+        $node = $treeBuilder->root('gateways');
 
         $node
             ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
                 ->prototype('array')
             ->children()
-                ->scalarNode('api')->end()
+                ->scalarNode('api_name')
+                    ->validate()
+                        ->ifNotInArray(array('ENGAGE_SPARK', 'SEMAPHORE_PRIORITY', 'SEMAPHORE_REGULAR'))
+                        ->thenInvalid('The %s sms sender is not supported')
+                    ->end()
+                ->end()
                 ->scalarNode('api_key')->end()
                 ->scalarNode('sender_name')->end()
-                ->arrayNode('delivery_numbers')
+                ->booleanNode('truncate_sms')->end()
+                ->arrayNode('test_delivery_numbers')
                     ->performNoDeepMerging()
+                ->end()
+                ->scalarNode('organization_id')->end()
+                ->scalarNode('recipient_type')
+                    ->validate()
+                        ->ifNotInArray(array('mobile_number', 'contact_id'))
+                        ->thenInvalid('The %s recipient type is not supported')
+                    ->end()
                 ->end()
             ->end()
         ;

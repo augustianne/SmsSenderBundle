@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader;
  * Bundle Extension
  *
  * @author  Yan Barreta
- * @version dated: April 30, 2015 3:55:29 PM
+ * @version dated: August 7, 2018
  */
 class SmsSenderExtension extends Extension
 {
@@ -27,18 +27,18 @@ class SmsSenderExtension extends Extension
         $container->setParameter('yan_sms_sender', $config);
         
         $container->setParameter('yan_sms_sender.enable_delivery', $config['enable_delivery']);
-        $container->setParameter('yan_sms_sender.senders', $config['senders']);
+        $container->setParameter('yan_sms_sender.gateways', $config['gateways']);
 
-        foreach ($config['senders'] as $key => $sender) {
-            $container->setParameter('yan_sms_sender.senders.'.$key, $config['senders'][$key]);            
+        foreach ($config['gateways'] as $key => $sender) {
+            $container->setParameter('yan_sms_sender.gateways.'.$key, $config['gateways'][$key]);            
         }
 
-        if (isset($config['default_sender'])) {
-            if (!array_key_exists($config['default_sender'], $config['senders'])) {
-                throw new InvalidConfigurationException('The value for default_sender must be a part of senders list.');
+        if (isset($config['default_gateway_id'])) {
+            if (!array_key_exists($config['default_gateway_id'], $config['gateways'])) {
+                throw new InvalidConfigurationException('The value for default_gateway_id must be a part of gateways list.');
             }
 
-            $container->setParameter('yan_sms_sender.default_sender', $config['default_sender']);
+            $container->setParameter('yan_sms_sender.default_gateway_id', $config['default_gateway_id']);
         }
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
