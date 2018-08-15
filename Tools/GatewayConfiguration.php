@@ -62,4 +62,9 @@ class GatewayConfiguration
     {
         return $this->parameters['recipient_type'];
     }
+
+    public function getDefaultCountryCode()
+    {
+        return $this->parameters['default_country_code'];
+    }
 }

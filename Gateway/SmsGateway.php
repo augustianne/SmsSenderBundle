@@ -55,9 +55,8 @@ abstract class SmsGateway
         return $this->config->getGatewayConfigurationByApiName($this->getName());
     }
 
-    abstract public function getSender();
-    abstract public function composeParameters();
-    abstract public function handleResult();
+    abstract public function composeParameters(Sms $sms);
+    abstract public function handleResult($result);
     
     /**
      * Sends actual sms

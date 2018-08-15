@@ -17,10 +17,10 @@ use \Exception;
  * Exception for when an sms sender is not defined
  *
  * @author  Yan Barreta
- * @version dated: August 9, 2018
+ * @version dated: August 13, 2018
  */
 
-class GatewayNotFoundException extends Exception
+class InvalidGatewayParameterException extends Exception
 {
 
 	private $json = null;

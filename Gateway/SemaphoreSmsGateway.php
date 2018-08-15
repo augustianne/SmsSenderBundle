@@ -35,12 +35,12 @@ class SemaphoreSmsGateway extends SmsGateway
     {
         $gatewayConfiguration = $this->getGatewayConfiguration();
 
-        $formattedNumbers = $sms->formatNumber();
+        $formattedRecipients = $this->smsComposer->formatRecipientsForSending($sms);
         $formattedMessage = $sms->getContent();
         
         $params = array(
             'apikey' => $gatewayConfiguration->getApiKey(),
-            'number' => $formattedNumbers,
+            'number' => $formattedRecipients,
             'message' => $formattedMessage,
             'sendername' => $gatewayConfiguration->getSenderName()
         );

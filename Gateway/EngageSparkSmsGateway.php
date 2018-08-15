@@ -11,8 +11,9 @@
 
 namespace Yan\Bundle\SmsSenderBundle\Gateway;
 
+use Yan\Bundle\SmsSenderBundle\Composer\Sms;
 use Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException;
-use Yan\Bundle\SmsSenderBundle\Senders\SmsGateway;
+use Yan\Bundle\SmsSenderBundle\Gateway\SmsGateway;
 
 /**
  * Actual sending of sms
@@ -35,22 +36,33 @@ class EngageSparkSmsGateway extends SmsGateway
     {
         $gatewayConfiguration = $this->getGatewayConfiguration();
 
-        $formattedNumbers = $sms->formatNumber();
+        $formattedRecipients = $this->smsComposer->formatRecipientsForSending($sms);
         $formattedMessage = $sms->getContent();
         
         $params = array(
             'apikey' => $gatewayConfiguration->getApiKey(),
             'organization_id' => $gatewayConfiguration->getOrganizationId(),
-            'recipient_type' => $gatewayConfiguration->getRecipientType()
-            'mobile_numbers' => $formattedNumbers,
-            'contact_ids' => $gatewayConfiguration->getContactId(),
-            'message' => $formattedMessage,
-            'sender_id' => $gatewayConfiguration->getSenderName()
+            'recipient_type' => $gatewayConfiguration->getRecipientType(),
+            'sender_id' => $gatewayConfiguration->getSenderName(),
+            'message' => $formattedMessage
         );
+
+        $recipientKey = 'mobile_numbers';
+        if ($params['recipient_type'] == 'contact_id') {
+            $recipientKey = 'contact_ids';
+        }
+
+        $params[$recipientKey] = sprintf("[%s]", $formattedRecipients);
 
         return $params;
     }
 
+    /**
+     * Handles results
+     *
+     * @param $result
+     * @throws DeliveryFailureException
+     */ 
     public function handleResult($result)
     {   
         $json = json_decode($result, true);

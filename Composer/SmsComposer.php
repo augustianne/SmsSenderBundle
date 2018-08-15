@@ -21,7 +21,7 @@ use Yan\Bundle\SmsSenderBundle\Tools\GatewayConfiguration;
  * @author  Yan Barreta
  * @version dated: August 8, 2018
  */
-class SmsComposer
+abstract class SmsComposer
 {
 
     const CHARACTER_LIMIT = 155;
@@ -33,23 +33,28 @@ class SmsComposer
         $this->config = $config;
     }
 
+    abstract public function internationalizeNumbers(Sms $sms, GatewayConfiguration $gatewayConfiguration);
+    abstract public function formatRecipientsForSending(Sms $sms, GatewayConfiguration $gatewayConfiguration);
+
     /**
      * Accepts a Sms object, splits it into Smss 
      * that has content under 155 characters
      * 
      * @param Sms
-     * @return Array of Smss
+     * @return Array of Smses
      */ 
     public function compose(Sms $sms, GatewayConfiguration $gatewayConfiguration)
     {
         $testDeliveryNumbers = $gatewayConfiguration->getTestDeliveryNumbers();
 
         if (!empty($testDeliveryNumbers)) {
-            $formattedSms = sprintf('Sent to: %s. %s', $sms->formatNumber(), $sms->getContent());
+            $formattedSms = sprintf('Sent to: %s. %s', $this->formatRecipientsForSending($sms, $gatewayConfiguration), $sms->getContent());
 
             $sms->setContent($formattedSms);
-            $sms->setNumbers($testDeliveryNumbers);
+            $sms->setRecipients($testDeliveryNumbers);
         }
+
+        $this->internationalizeNumbers($sms, $gatewayConfiguration);
 
         $smses = array($sms);
 
@@ -111,7 +116,7 @@ class SmsComposer
         $newSms = $this->splitSms($content);
 
         $parts = count($newSms);
-        $smss = array();
+        $smses = array();
 
         foreach ($newSms as $key => $iNewSms) {
             if ($parts > 1) {
@@ -122,10 +127,10 @@ class SmsComposer
             $clonedSms = clone ($sms);
             $clonedSms->setContent(implode(' ', $iNewSms));
             
-            $smss[] = $clonedSms;
+            $smses[] = $clonedSms;
         }
 
-        return array_reverse($smss);
+        return array_reverse($smses);
     }
 
 }

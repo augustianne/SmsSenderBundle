@@ -112,7 +112,9 @@ class SmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
                 'default_gateway_id' => 'SENDER',
                 'gateways' => array(
                     'SENDER' => array(
-                        'api_key' => 'APIKEY'
+                        'api_key' => 'APIKEY',
+                        'truncate_sms' => false,
+                        'default_country_code' => '63'
                     )
                 )
             )
@@ -122,8 +124,10 @@ class SmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->container->hasParameter($this->root.".enable_delivery"));
         $this->assertTrue($this->container->hasParameter($this->root.".default_gateway_id"));
-        
+
         $this->assertTrue($this->container->getParameter($this->root.".enable_delivery"));
+
+        $this->assertEquals($configs[$this->root]['gateways']['SENDER'], $this->container->getParameter($this->root.".gateways.SENDER"));
         $this->assertEquals($configs[$this->root]['default_gateway_id'], $this->container->getParameter($this->root.".default_gateway_id"));
     }
 
@@ -138,6 +142,8 @@ class SmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
                 'gateways' => array(
                     'sender1' => array(
                         'api_key' => 'APIKEY',
+                        'truncate_sms' => false,
+                        'default_country_code' => '63'
                     )
                 )
             )

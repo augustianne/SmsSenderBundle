@@ -14,6 +14,16 @@ services:
         arguments:
             config: '@yan.sms_sender.tools.accessor.configuration'
 
+    yan.sms_sender.composer.sms.engage_spark:
+        class: Yan\Bundle\SmsSenderBundle\Composer\EngageSparkSmsComposer
+        arguments:
+            config: '@yan.sms_sender.tools.accessor.configuration'
+
+    yan.sms_sender.composer.sms.semaphore:
+        class: Yan\Bundle\SmsSenderBundle\Composer\SemaphoreSmsComposer
+        arguments:
+            config: '@yan.sms_sender.tools.accessor.configuration'
+
     yan.sms_sender.gateway.sms:
         class: Yan\Bundle\SmsSenderBundle\Gateway\SmsGateway
         arguments:
@@ -26,28 +36,28 @@ services:
         arguments:
             config: '@yan.sms_sender.tools.accessor.configuration'
             curl: '@yan.semaphore_sms.curl'
-            smsComposer: '@yan.sms_sender.composer.sms'
+            smsComposer: '@yan.sms_sender.composer.sms.engage_spark'
 
     yan.sms_sender.gateway.sms.semaphore:
         class: Yan\Bundle\SmsSenderBundle\Gateway\SemaphoreSmsGateway
         arguments:
             config: '@yan.sms_sender.tools.accessor.configuration'
             curl: '@yan.semaphore_sms.curl'
-            smsComposer: '@yan.sms_sender.composer.sms'
+            smsComposer: '@yan.sms_sender.composer.sms.semaphore'
 
     yan.sms_sender.gateway.sms.semaphore.regular:
         class: Yan\Bundle\SmsSenderBundle\Gateway\SemaphoreRegularSmsGateway
         arguments:
             config: '@yan.sms_sender.tools.accessor.configuration'
             curl: '@yan.semaphore_sms.curl'
-            smsComposer: '@yan.sms_sender.composer.sms'
+            smsComposer: '@yan.sms_sender.composer.sms.semaphore'
 
     yan.sms_sender.gateway.sms.semaphore.priority:
         class: Yan\Bundle\SmsSenderBundle\Gateway\SemaphorePrioritySmsGateway
         arguments:
             config: '@yan.sms_sender.tools.accessor.configuration'
             curl: '@yan.semaphore_sms.curl'
-            smsComposer: '@yan.sms_sender.composer.sms'
+            smsComposer: '@yan.sms_sender.composer.sms.semaphore'
 
     yan.sms_sender.tools.accessor.configuration:
         class: Yan\Bundle\SmsSenderBundle\Tools\Accessor\ConfigurationAccessor

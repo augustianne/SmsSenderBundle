@@ -20,51 +20,51 @@ namespace Yan\Bundle\SmsSenderBundle\Composer;
 class Sms
 {
     
-    private $numbers = array();
+    private $recipients = array();
     private $from = null;
     private $content = null;
 
     /**
-     * Add number to a list of numbers the sms will be sent to
+     * Add recipient to a list of recipients the sms will be sent to
      *
-     * @param String $number
+     * @param String $recipient
      * @return void
      */ 
-    public function addNumber($number)
+    public function addRecipient($recipient)
     {
-        if (!in_array($number, $this->numbers)) {
-            $this->numbers[] = $number;
+        if (!in_array($recipient, $this->recipients)) {
+            $this->recipients[] = $recipient;
         }
     }
 
     /**
-     * Sets an array of numbers the sms will be sent to
+     * Sets an array of recipients the sms will be sent to
      *
      * @return void
      */ 
-    public function setNumbers($numbers)
+    public function setRecipients($recipients)
     {
-        return $this->numbers = array_unique($numbers);
+        return $this->recipients = array_unique($recipients);
     }
 
     /**
-     * Retrieves an array of recipeint's numbers
+     * Retrieves an array of recipient's recipients
      *
      * @return Array
      */ 
-    public function getNumbers()
+    public function getRecipients()
     {
-        return $this->numbers;
+        return $this->recipients;
     }
 
     /**
-     * Format the array of numbers to be ready for sending
+     * Format the array of recipients to be ready for sending
      *
      * @return Array
      */ 
-    public function formatNumber()
+    public function formatRecipient()
     {
-        return implode(',', $this->numbers);
+        return implode(',', $this->recipients);
     }
 
     /**
