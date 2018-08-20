@@ -9,11 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Yan\Bundle\SmsSenderBundle\Senders;
+namespace Yan\Bundle\SmsSenderBundle\Sender;
 
 use \Exception;
 
+use Yan\Bundle\SmsSenderBundle\Composer\Sms;
 use Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException;
+use Yan\Bundle\SmsSenderBundle\Exception\GatewayNotFoundException;
+use Yan\Bundle\SmsSenderBundle\Gateway\SmsGatewayProvider;
 use Yan\Bundle\SmsSenderBundle\Tools\Accessor\ConfigurationAccessor;
 
 /**
@@ -25,18 +28,13 @@ use Yan\Bundle\SmsSenderBundle\Tools\Accessor\ConfigurationAccessor;
 class SmsSender
 {
     protected $config;
-    protected $smsGateways;
-
-    private $smsGateway;
+    protected $smsGatewayProvider;
     
-    public function __construct(ConfigurationAccessor $config, $smsGateways)
+    public function __construct(ConfigurationAccessor $config, SmsGatewayProvider $smsGatewayProvider)
     {
-        foreach ($smsGateways as $smsGateway) {
-            $this->smsGateways[$smsSender->getName()] = $smsGateway;
-        }
-
-        $this->smsGateway = $this->smsGateways[$this->config->getDefaultGatewayId()];
-    }    
+        $this->config = $config;
+        $this->smsGatewayProvider = $smsGatewayProvider;
+    }
 
     /**
      * Send sms using the set gateway
@@ -52,16 +50,28 @@ class SmsSender
         }
 
         try {
-            return $this->smsGateway->send($sms);
+            $defaultSmsGateway = $this->smsGatewayProvider->getDefaultGateway();
+            return $defaultSmsGateway->send($sms);
+        }
+        catch (GatewayNotFoundException $e) {
+            return $this->sendViaBackupGateway($sms);
         }
         catch (DeliveryFailureException $e) {
-            if (!is_null($this->config->getBackupGatewayId())) {
-                $backupGateway = $this->config->getGatewayConfigurationByGatewayId($this->config->getBackupGatewayId());
+            return $this->sendViaBackupGateway($sms);
+        }
+    }
 
-                return $backupGateway->send($sms);
-            }
-
-            throw $e;    
+    public function sendViaBackupGateway($sms)
+    {
+        try {
+            $gateway = $this->smsGatewayProvider->getBackupGateway();
+            return $gateway->send($sms);
+        }
+        catch (GatewayNotFoundException $e) {
+            throw new DeliveryFailureException();
+        }
+        catch (DeliveryFailureException $e) {
+            throw $e;
         }
     }
 }

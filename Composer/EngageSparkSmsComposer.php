@@ -13,6 +13,7 @@ namespace Yan\Bundle\SmsSenderBundle\Composer;
 
 use Yan\Bundle\SmsSenderBundle\Composer\Sms;
 use Yan\Bundle\SmsSenderBundle\Composer\SmsComposer;
+use Yan\Bundle\SmsSenderBundle\Exception\InvalidGatewayParameterException;
 use Yan\Bundle\SmsSenderBundle\Tools\Accessor\ConfigurationAccessor;
 use Yan\Bundle\SmsSenderBundle\Tools\GatewayConfiguration;
 
@@ -24,6 +25,53 @@ use Yan\Bundle\SmsSenderBundle\Tools\GatewayConfiguration;
  */
 class EngageSparkSmsComposer extends SmsComposer
 {
+    protected $requiredParameters = array(
+        'organization_id', 'recipient_type', 'sender_id', 'message'
+    );
+
+    /**
+     * Composes text message for sending
+     *
+     * @param Message $message
+     * @return Array
+     */ 
+    public function composeSmsParameters(Sms $sms, GatewayConfiguration $gatewayConfiguration)
+    {
+        $formattedRecipients = $this->formatRecipientsForSending($sms, $gatewayConfiguration);
+        $formattedMessage = $sms->getContent();
+        
+        $params = array(
+            'organization_id' => $gatewayConfiguration->getOrganizationId(),
+            'recipient_type' => $gatewayConfiguration->getRecipientType(),
+            'sender_id' => $gatewayConfiguration->getSenderName(),
+            'message' => $formattedMessage
+        );
+        
+        if (!in_array($params['recipient_type'], array('contact_id', 'mobile_number'))) {
+            throw new InvalidGatewayParameterException(
+                sprintf(
+                    '%s is not included in the supported recipient types list. [mobile_number, contact_id]',
+                    $params['recipient_type']
+                )
+            );
+        }
+
+        $recipientKey = 'mobile_numbers';
+        if ($params['recipient_type'] == 'contact_id') {
+            $recipientKey = 'contact_ids';
+        }
+
+        $params[$recipientKey] = $formattedRecipients;
+
+        $this->requiredParameters[] = $recipientKey;
+        
+        // $paramsForValidation = $params;
+        // $paramsForValidation[$recipientKey] = $sms->getRecipients();
+        $this->validateRequiredParameters($params);
+
+        return $params;
+    }
+
     /**
      * Make the recipients ready for sending according to gateway rules
      *
@@ -109,5 +157,31 @@ class EngageSparkSmsComposer extends SmsComposer
         $recipients = $sms->getRecipients();
 
         return implode(',', $recipients);
+    }
+
+    /**
+     * Validate parameters based on gateway requirement
+     *
+     * @param Sms $sms
+     * @return void
+     * @throws InvalidGatewayParameterException
+     */ 
+    public function validateRequiredParameters($parameters)
+    {
+        if (isset($parameters['contact_ids']) && $parameters['contact_ids'] == '[]') {
+            throw new InvalidGatewayParameterException(sprintf(
+                "The following parameters are required and should not be left blank: [%s]",
+                'contact_ids'
+            ));
+        }
+
+        if (isset($parameters['mobile_numbers']) && $parameters['mobile_numbers'] == '[]') {
+            throw new InvalidGatewayParameterException(sprintf(
+                "The following parameters are required and should not be left blank: [%s]",
+                'mobile_numbers'
+            ));
+        }
+
+        parent::validateRequiredParameters($parameters);
     }
 }

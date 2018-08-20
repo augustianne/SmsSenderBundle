@@ -27,34 +27,40 @@ class EngageSparkSmsGateway extends SmsGateway
     protected $name = 'ENGAGE_SPARK';
 
     /**
-     * Composes text message for sending
+     * Sends actual sms
      *
-     * @param Message $message
-     * @return Array
+     * @param Sms $sms
+     * @return void
+     * @throws Exception
      */ 
-    public function composeParameters(Sms $sms)
+    public function send(Sms $sms)
     {
-        $gatewayConfiguration = $this->getGatewayConfiguration();
-
-        $formattedRecipients = $this->smsComposer->formatRecipientsForSending($sms);
-        $formattedMessage = $sms->getContent();
-        
-        $params = array(
-            'apikey' => $gatewayConfiguration->getApiKey(),
-            'organization_id' => $gatewayConfiguration->getOrganizationId(),
-            'recipient_type' => $gatewayConfiguration->getRecipientType(),
-            'sender_id' => $gatewayConfiguration->getSenderName(),
-            'message' => $formattedMessage
-        );
-
-        $recipientKey = 'mobile_numbers';
-        if ($params['recipient_type'] == 'contact_id') {
-            $recipientKey = 'contact_ids';
+        if (!$this->config->isDeliveryEnabled()) {
+            return;
         }
 
-        $params[$recipientKey] = sprintf("[%s]", $formattedRecipients);
+        $gatewayConfiguration = $this->getGatewayConfiguration();
+        $smses = $this->smsComposer->compose($sms, $gatewayConfiguration);
 
-        return $params;
+        foreach ($smses as $iSms) {
+            $result = $this->curl->post(
+                $this->getUrl(), 
+                $this->smsComposer->composeSmsParameters($iSms, $gatewayConfiguration),
+                array(
+                    'Authorization' => $gatewayConfiguration->getApiKey(),
+                    'Content-type' => 'application/json'
+                )
+            );
+
+            try {
+                $this->handleResult($result);
+            } catch(DeliveryFailureException $e) {
+                throw $e;
+            }
+            
+        }
+
+        return true;
     }
 
     /**
@@ -71,8 +77,8 @@ class EngageSparkSmsGateway extends SmsGateway
             throw new DeliveryFailureException('Request sending failed.', $json);
         }
         
-        if (!isset($json[0]['status']) || $json[0]['status'] === 'Failed') {
-            throw new DeliveryFailureException('Request sending failed.', $json);   
-        }
+        // if (!isset($json[0]['status']) || $json[0]['status'] === 'Failed') {
+        //     throw new DeliveryFailureException('Request sending failed.', $json);   
+        // }
     }
 }

@@ -25,7 +25,7 @@ class InvalidGatewayParameterException extends Exception
 
 	private $json = null;
 
-	public function __construct($message)
+	public function __construct($message="Invalid gateway")
 	{
 		parent::__construct($message);
 	}

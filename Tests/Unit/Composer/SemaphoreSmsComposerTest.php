@@ -50,6 +50,15 @@ class SemaphoreSmsComposerTest extends \PHPUnit_Framework_TestCase
         return $gatewayConfigurationMock;
     }
 
+    public function getSmsMock()
+    {
+        $smsMock = $this->getMockBuilder('Yan\Bundle\SmsSenderBundle\Composer\Sms')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        return $smsMock;
+    }
+
     public function getStubForTest()
     {
         $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Composer\SemaphoreSmsComposer')
@@ -84,6 +93,56 @@ class SemaphoreSmsComposerTest extends \PHPUnit_Framework_TestCase
             array(array('+639995314906'), '+639995314906'),
             array(array('+639995314906', '+6309995314906'), '+639995314906,+6309995314906'),
             array(array('+639995314906', '09995314907'), '+639995314906,09995314907'),
+        );
+    }
+
+    public function getTestComposeParameters()
+    {
+        return array(
+            array(
+                array(
+                    'apikey' => 'SEMAPHORE_API_KEY',
+                    'recipients' => array('09173149060'),
+                    'message' => 'Formatted message',
+                    'sender_id' => 'SEMAPHORE_SENDER_NAME',
+                    'formatted_recipients' => '09173149060'
+                ),
+                array(
+                    'apikey' => 'SEMAPHORE_API_KEY',
+                    'number' => '09173149060',
+                    'message' => 'Formatted message',
+                    'sendername' => 'SEMAPHORE_SENDER_NAME',
+                ), false
+            ),
+            array(
+                array(
+                    'apikey' => 'SEMAPHORE_API_KEY',
+                    'recipients' => array(),
+                    'message' => 'Formatted message',
+                    'sender_id' => 'SEMAPHORE_SENDER_NAME',
+                    'formatted_recipients' => '["639173149060"]'
+                ),
+                array(
+                    'apikey' => 'SEMAPHORE_API_KEY',
+                    'number' => '09173149060',
+                    'message' => 'Formatted message',
+                    'sendername' => 'SEMAPHORE_SENDER_NAME'
+                ), true
+            ),
+            array(
+                array(
+                    'apikey' => 'SEMAPHORE_API_KEY',
+                    'recipients' => array(),
+                    'sender_id' => 'SEMAPHORE_SENDER_NAME',
+                    'formatted_recipients' => '["639173149060"]'
+                ),
+                array(
+                    'apikey' => 'SEMAPHORE_API_KEY',
+                    'number' => '09173149060',
+                    'message' => 'Formatted message',
+                    'sendername' => 'SEMAPHORE_SENDER_NAME'
+                ), true
+            )
         );
     }
 
@@ -141,5 +200,54 @@ class SemaphoreSmsComposerTest extends \PHPUnit_Framework_TestCase
         // var_dump($recipientsBeforeCleaning, $sms->getRecipients());
 
         $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SemaphoreSmsComposer::composeSmsParameters
+     * @dataProvider getTestComposeParameters
+     */
+    public function testComposeParameters($values, $expected, $expectException)
+    {
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+
+        if (isset($values['apikey'])) {
+            $gatewayConfigurationMock->expects($this->any())
+                 ->method('getApiKey')
+                 ->will($this->returnValue($values['apikey']));
+        }
+
+        if (isset($values['sender_id'])) {
+            $gatewayConfigurationMock->expects($this->any())
+             ->method('getSenderName')
+             ->will($this->returnValue($values['sender_id']));
+        }
+
+        $smsMock = $this->getSmsMock();
+
+        if (isset($values['recipients'])) {
+            $smsMock->expects($this->any())
+                 ->method('getRecipients')
+                 ->will($this->returnValue($values['recipients']));
+
+            $smsMock->expects($this->any())
+                 ->method('setRecipients')
+                 ->will($this->returnValue($values['recipients']));
+        }
+
+        if (isset($values['message'])) {
+            $smsMock->expects($this->any())
+             ->method('getContent')
+             ->will($this->returnValue($values['message']));
+        }
+
+        $sut = new SemaphoreSmsComposer($this->getConfigurationMock());
+
+        if ($expectException) {
+            $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\InvalidGatewayParameterException');
+            $sut->composeSmsParameters($smsMock, $gatewayConfigurationMock);
+        }
+        else {
+            $this->assertEquals($expected, $sut->composeSmsParameters($smsMock, $gatewayConfigurationMock));
+        }
     }
 }

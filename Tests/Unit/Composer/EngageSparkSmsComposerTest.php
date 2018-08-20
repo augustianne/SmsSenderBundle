@@ -41,6 +41,15 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
         return $configurationMock;
     }
 
+    public function getCurlMock()
+    {
+        $curlMock = $this->getMockBuilder('Yan\Bundle\SmsSenderBundle\Tools\Request\Curl')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        return $curlMock;
+    }
+
     public function getGatewayConfigurationMock()
     {
         $gatewayConfigurationMock = $this->getMockBuilder('Yan\Bundle\SmsSenderBundle\Tools\GatewayConfiguration')
@@ -48,6 +57,15 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         return $gatewayConfigurationMock;
+    }
+
+    public function getSmsMock()
+    {
+        $smsMock = $this->getMockBuilder('Yan\Bundle\SmsSenderBundle\Composer\Sms')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        return $smsMock;
     }
 
     public function getStubForTest()
@@ -98,6 +116,101 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
             array(array('+639995314906'), '["639995314906"]'),
             array(array('+639995314906', '+6309995314906'), '["639995314906"]'),
             array(array('+639995314906', '09995314907'), '["639995314906","639995314907"]'),
+        );
+    }
+
+    public function getTestComposeParameters()
+    {
+        return array(
+            array(
+                array(
+                    'apikey' => 'ENGAGE_SPARK_API_KEY',
+                    'organization_id' => 'ENGAGE_SPARK_ORG_ID',
+                    'recipient_type' => 'contact_id',
+                    'recipients' => array('09173149060'),
+                    'message' => 'Formatted message',
+                    'sender_id' => 'ENGAGE_SPARK_SENDER_NAME',
+                    'formatted_recipients' => '["09173149060"]'
+                ),
+                array(
+                    'organization_id' => 'ENGAGE_SPARK_ORG_ID',
+                    'recipient_type' => 'contact_id',
+                    'contact_ids' => '["09173149060"]',
+                    'message' => 'Formatted message',
+                    'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
+                ), false
+            ),
+            array(
+                array(
+                    'apikey' => 'ENGAGE_SPARK_API_KEY',
+                    'organization_id' => 'ENGAGE_SPARK_ORG_ID',
+                    'recipient_type' => 'mobile_number',
+                    'recipients' => array('639173149060'),
+                    'message' => 'Formatted message',
+                    'sender_id' => 'ENGAGE_SPARK_SENDER_NAME',
+                    'formatted_recipients' => '["639173149060"]'
+                ),
+                array(
+                    'organization_id' => 'ENGAGE_SPARK_ORG_ID',
+                    'recipient_type' => 'mobile_number',
+                    'mobile_numbers' => '["639173149060"]',
+                    'message' => 'Formatted message',
+                    'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
+                ), false
+            ),
+            array(
+                array(
+                    'apikey' => 'ENGAGE_SPARK_API_KEY',
+                    'organization_id' => 'ENGAGE_SPARK_ORG_ID',
+                    'recipient_type' => 'phone_number',
+                    'recipients' => array('09173149060'),
+                    'message' => 'Formatted message',
+                    'sender_id' => 'ENGAGE_SPARK_SENDER_NAME',
+                    'formatted_recipients' => '["639173149060"]'
+                ),
+                array(
+                    'organization_id' => 'ENGAGE_SPARK_ORG_ID',
+                    'recipient_type' => 'mobile_number',
+                    'mobile_numbers' => '["639173149060"]',
+                    'message' => 'Formatted message',
+                    'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
+                ), true
+            ),
+            array(
+                array(
+                    'apikey' => 'ENGAGE_SPARK_API_KEY',
+                    'recipient_type' => 'mobile_number',
+                    'recipients' => array('09173149060'),
+                    'message' => 'Formatted message',
+                    'sender_id' => 'ENGAGE_SPARK_SENDER_NAME',
+                    'formatted_recipients' => '["639173149060"]'
+                ),
+                array(
+                    'organization_id' => 'ENGAGE_SPARK_ORG_ID',
+                    'recipient_type' => 'mobile_number',
+                    'mobile_numbers' => '["639173149060"]',
+                    'message' => 'Formatted message',
+                    'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
+                ), true
+            ),
+            array(
+                array(
+                    'apikey' => 'ENGAGE_SPARK_API_KEY',
+                    'organization_id' => 'ENGAGE_SPARK_ORG_ID',
+                    'recipient_type' => 'contact_id',
+                    'recipients' => array(),
+                    'message' => 'Formatted message',
+                    'sender_id' => 'ENGAGE_SPARK_SENDER_NAME',
+                    'formatted_recipients' => '["639173149060"]'
+                ),
+                array(
+                    'organization_id' => 'ENGAGE_SPARK_ORG_ID',
+                    'recipient_type' => 'mobile_number',
+                    'contact_ids' => '["639173149060"]',
+                    'message' => 'Formatted message',
+                    'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
+                ), true
+            )
         );
     }
 
@@ -181,8 +294,65 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
         $sut = new EngageSparkSmsComposer($configurationMock);
         $actual = $sut->formatRecipientsForSending($sms, $gatewayConfigurationMock);
         
-        // var_dump($recipientsBeforeCleaning, $sms->getRecipients());
-
         $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsComposer::composeSmsParameters
+     * @dataProvider getTestComposeParameters
+     */
+    public function testComposeParameters($values, $expected, $expectException)
+    {
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        if (isset($values['apikey'])) {
+            $gatewayConfigurationMock->expects($this->any())
+                ->method('getApiKey')
+                ->will($this->returnValue($values['apikey']));
+        }
+
+        if (isset($values['organization_id'])) {
+            $gatewayConfigurationMock->expects($this->any())
+                ->method('getOrganizationId')
+                ->will($this->returnValue($values['organization_id']));
+        }
+
+        if (isset($values['recipient_type'])) {
+            $gatewayConfigurationMock->expects($this->any())
+                ->method('getRecipientType')
+                ->will($this->returnValue($values['recipient_type']));
+        }
+
+        if (isset($values['sender_id'])) {
+            $gatewayConfigurationMock->expects($this->any())
+                ->method('getSenderName')
+                ->will($this->returnValue($values['sender_id']));
+        }
+
+        $smsMock = $this->getSmsMock();
+        if (isset($values['recipients'])) {
+            $smsMock->expects($this->any())
+                ->method('getRecipients')
+                ->will($this->returnValue($values['recipients']));
+
+            $smsMock->expects($this->any())
+                ->method('setRecipients')
+                ->will($this->returnValue($values['recipients']));
+        }
+
+        if (isset($values['message'])) {
+            $smsMock->expects($this->any())
+                ->method('getContent')
+                ->will($this->returnValue($values['message']));
+        }
+
+        $sut = new EngageSparkSmsComposer($this->getConfigurationMock());
+
+        if ($expectException) {
+            $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\InvalidGatewayParameterException');
+            $sut->composeSmsParameters($smsMock, $gatewayConfigurationMock);
+        }
+        else {
+            $this->assertEquals($expected, $sut->composeSmsParameters($smsMock, $gatewayConfigurationMock));
+        }
     }
 }

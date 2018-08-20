@@ -25,7 +25,7 @@ class DeliveryFailureException extends Exception
 
 	private $json = null;
 
-	public function __construct($message, $json=array())
+	public function __construct($message="Request sending failed", $json=array())
 	{
 		$this->json = $json;
 		parent::__construct($message);

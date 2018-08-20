@@ -25,7 +25,7 @@ class GatewayNotFoundException extends Exception
 
 	private $json = null;
 
-	public function __construct($message)
+	public function __construct($message="Gateway not found.")
 	{
 		parent::__construct($message);
 	}

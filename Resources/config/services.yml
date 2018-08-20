@@ -4,10 +4,7 @@ services:
         class: Yan\Bundle\SmsSenderBundle\Sender\SmsSender
         arguments:
             config: '@yan.sms_sender.tools.accessor.configuration'
-            smsGateways:
-                - '@yan.sms_sender.gateway.sms.engage_spark'
-                - '@yan.sms_sender.gateway.sms.semaphore.regular'
-                - '@yan.sms_sender.gateway.sms.semaphore.priority'
+            smsGatewayProvider: '@yan.sms_sender.gateway.sms.provider'
 
     yan.sms_sender.composer.sms:
         class: Yan\Bundle\SmsSenderBundle\Composer\SmsComposer
@@ -58,6 +55,15 @@ services:
             config: '@yan.sms_sender.tools.accessor.configuration'
             curl: '@yan.semaphore_sms.curl'
             smsComposer: '@yan.sms_sender.composer.sms.semaphore'
+
+    yan.sms_sender.gateway.sms.provider:
+        class: Yan\Bundle\SmsSenderBundle\Gateway\SmsGatewayProvider
+        arguments:
+            config: '@yan.sms_sender.tools.accessor.configuration'
+            smsGateways:
+                - '@yan.sms_sender.gateway.sms.engage_spark'
+                - '@yan.sms_sender.gateway.sms.semaphore.regular'
+                - '@yan.sms_sender.gateway.sms.semaphore.priority'
 
     yan.sms_sender.tools.accessor.configuration:
         class: Yan\Bundle\SmsSenderBundle\Tools\Accessor\ConfigurationAccessor

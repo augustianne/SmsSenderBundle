@@ -58,16 +58,6 @@ class Sms
     }
 
     /**
-     * Format the array of recipients to be ready for sending
-     *
-     * @return Array
-     */ 
-    public function formatRecipient()
-    {
-        return implode(',', $this->recipients);
-    }
-
-    /**
      * Sets the sender of the sms
      *
      * @return String

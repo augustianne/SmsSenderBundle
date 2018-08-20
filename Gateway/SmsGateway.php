@@ -55,7 +55,6 @@ abstract class SmsGateway
         return $this->config->getGatewayConfigurationByApiName($this->getName());
     }
 
-    abstract public function composeParameters(Sms $sms);
     abstract public function handleResult($result);
     
     /**
@@ -77,7 +76,7 @@ abstract class SmsGateway
         foreach ($smses as $iSms) {
             $result = $this->curl->post(
                 $this->getUrl(), 
-                $this->composeParameters($iSms)
+                $this->smsComposer->composeSmsParameters($iSms, $gatewayConfiguration)
             );
 
             try {

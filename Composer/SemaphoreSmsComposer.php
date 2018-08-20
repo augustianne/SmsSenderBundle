@@ -13,6 +13,7 @@ namespace Yan\Bundle\SmsSenderBundle\Composer;
 
 use Yan\Bundle\SmsSenderBundle\Composer\Sms;
 use Yan\Bundle\SmsSenderBundle\Composer\SmsComposer;
+use Yan\Bundle\SmsSenderBundle\Exception\InvalidGatewayParameterException;
 use Yan\Bundle\SmsSenderBundle\Tools\Accessor\ConfigurationAccessor;
 use Yan\Bundle\SmsSenderBundle\Tools\GatewayConfiguration;
 
@@ -24,6 +25,32 @@ use Yan\Bundle\SmsSenderBundle\Tools\GatewayConfiguration;
  */
 class SemaphoreSmsComposer extends SmsComposer
 {
+    protected $requiredParameters = array(
+        'apikey', 'number', 'message', 'sendername'
+    );
+
+    /**
+     * Composes text message for sending
+     *
+     * @param Message $message
+     * @return Array
+     */ 
+    public function composeSmsParameters(Sms $sms, GatewayConfiguration $gatewayConfiguration)
+    {
+        $formattedRecipients = $this->formatRecipientsForSending($sms, $gatewayConfiguration);
+        $formattedMessage = $sms->getContent();
+        
+        $params = array(
+            'apikey' => $gatewayConfiguration->getApiKey(),
+            'number' => $formattedRecipients,
+            'message' => $formattedMessage,
+            'sendername' => $gatewayConfiguration->getSenderName()
+        );
+
+        $this->validateRequiredParameters($params);
+
+        return $params;
+    }
 
     /**
      * Make the recipients ready for sending according to gateway rules

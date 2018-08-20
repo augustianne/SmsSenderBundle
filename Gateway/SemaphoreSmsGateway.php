@@ -12,7 +12,7 @@
 namespace Yan\Bundle\SmsSenderBundle\Gateway;
 
 use Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException;
-use Yan\Bundle\SmsSenderBundle\Senders\SmsGateway;
+use Yan\Bundle\SmsSenderBundle\Gateway\SmsGateway;
 
 /**
  * Actual sending of sms
@@ -24,29 +24,6 @@ class SemaphoreSmsGateway extends SmsGateway
 {
     protected $url;
     protected $name;
-
-    /**
-     * Composes text message for sending
-     *
-     * @param Message $message
-     * @return Array
-     */ 
-    public function composeParameters(Sms $sms)
-    {
-        $gatewayConfiguration = $this->getGatewayConfiguration();
-
-        $formattedRecipients = $this->smsComposer->formatRecipientsForSending($sms);
-        $formattedMessage = $sms->getContent();
-        
-        $params = array(
-            'apikey' => $gatewayConfiguration->getApiKey(),
-            'number' => $formattedRecipients,
-            'message' => $formattedMessage,
-            'sendername' => $gatewayConfiguration->getSenderName()
-        );
-
-        return $params;
-    }
 
     public function handleResult($result)
     {   

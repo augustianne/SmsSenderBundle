@@ -11,7 +11,7 @@
 
 namespace Yan\Bundle\SmsSenderBundle\Gateway;
 
-use Yan\Bundle\SmsSenderBundle\Senders\SemaphoreSmsGateway;
+use Yan\Bundle\SmsSenderBundle\Gateway\SemaphoreSmsGateway;
 
 /**
  * Actual sending of sms

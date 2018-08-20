@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @author  Yan Barreta
  * @version dated: August 13, 2018
  */
-class SmsSenderTest extends \PHPUnit_Framework_TestCase
+class SmsGatewayTest extends \PHPUnit_Framework_TestCase
 {
     private $sut;
     private $root;

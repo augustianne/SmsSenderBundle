@@ -31,11 +31,11 @@ class Curl
         }
     }
 
-    public function post($url, $parameters = array())
+    public function post($url, $parameters=array(), $headers=array())
     {
         $curlRequest = new CurlRequest($url);
         $curlRequest->setOption(CURLOPT_RETURNTRANSFER, true);
-        $curlRequest->setOption(CURLOPT_HEADER, 0);
+        $curlRequest->setOption(CURLOPT_HEADER, $headers);
         $curlRequest->setOption(CURLOPT_VERBOSE, 0);
         $curlRequest->setOption(CURLOPT_POST, true);
         $curlRequest->setOption(CURLOPT_POSTFIELDS, $parameters);

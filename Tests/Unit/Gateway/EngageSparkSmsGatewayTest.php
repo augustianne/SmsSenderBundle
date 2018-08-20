@@ -11,7 +11,7 @@
 
 namespace Yan\Bundle\SmsSenderBundle\Tests\Unit\Gateway;
 
-use Yan\Bundle\SmsSenderBundle\Gateway\SmsGateway;
+use Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway;
 
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -59,7 +59,7 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
 
     public function getSmsComposerMock()
     {
-        $smsComposerMock = $this->getMockBuilder('Yan\Bundle\SmsSenderBundle\Composer\SmsComposer')
+        $smsComposerMock = $this->getMockBuilder('Yan\Bundle\SmsSenderBundle\Composer\EngageSparkSmsComposer')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -80,16 +80,14 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetUrl()
     {
-        $value = 'https://start.engagespark.com/api/v1/messages/sms';
-        $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway')
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $curlMock = $this->getCurlMock();
+        $configurationMock = $this->getConfigurationMock();
+        $smsComposerMock = $this->getSmsComposerMock();
 
-        $stub->expects($this->any())
-             ->method('getUrl')
-             ->will($this->returnValue($value));
+        $expected = 'https://start.engagespark.com/api/v1/messages/sms';
+        $sut = new EngageSparkSmsGateway($configurationMock, $curlMock, $smsComposerMock);
 
-        $this->assertEquals($value, $stub->getUrl());
+        $this->assertEquals($expected, $sut->getUrl());
     }
 
     /**
@@ -97,16 +95,14 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetName()
     {
-        $value = 'ENGAGE_SPARK';
-        $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway')
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $curlMock = $this->getCurlMock();
+        $configurationMock = $this->getConfigurationMock();
+        $smsComposerMock = $this->getSmsComposerMock();
 
-        $stub->expects($this->any())
-             ->method('getName')
-             ->will($this->returnValue($value));
+        $expected = 'ENGAGE_SPARK';
+        $sut = new EngageSparkSmsGateway($configurationMock, $curlMock, $smsComposerMock);
 
-        $this->assertEquals($value, $stub->getName());
+        $this->assertEquals($expected, $sut->getName());
     }
 
     /**
@@ -127,125 +123,11 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
             ->method('getGatewayConfigurationByApiName')
             ->will($this->returnValue($gatewayConfigurationMock));
 
-        $value = 'ENGAGE_SPARK';
-        $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway')
-            ->setConstructorArgs(array($configurationMock, $curlMock, $smsComposerMock))
-            ->getMockForAbstractClass();
-
-        $stub->expects($this->any())
-             ->method('getGatewayConfiguration')
-             ->will($this->returnValue($gatewayConfigurationMock));
+        $expected = 'ENGAGE_SPARK';
+        $sut = new EngageSparkSmsGateway($configurationMock, $curlMock, $smsComposerMock);
         
-        $this->assertEquals($value, $stub->getGatewayConfiguration()->getApiName());
+        $this->assertEquals($expected, $sut->getGatewayConfiguration()->getApiName());
     }
-
-    /**
-     * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsGateway::composeParameters
-     */
-    // public function testComposeParametersForContactIdRecipientType()
-    // {
-    //     $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
-    //     $gatewayConfigurationMock->expects($this->any())
-    //          ->method('getApiKey')
-    //          ->will($this->returnValue('ENGAGE_SPARK_API_KEY'));
-
-    //     $gatewayConfigurationMock->expects($this->any())
-    //          ->method('getOrganizationId')
-    //          ->will($this->returnValue('ENGAGE_SPARK_ORG_ID'));
-
-    //     $gatewayConfigurationMock->expects($this->any())
-    //          ->method('getRecipientType')
-    //          ->will($this->returnValue('contact_id'));
-
-    //     $gatewayConfigurationMock->expects($this->any())
-    //          ->method('getSenderName')
-    //          ->will($this->returnValue('ENGAGE_SPARK_SENDER_NAME'));
-
-    //     $smsMock = $this->getSmsMock();
-    //     $smsMock->expects($this->any())
-    //          ->method('formatRecipient')
-    //          ->will($this->returnValue('09173149060'));
-
-    //     $smsMock->expects($this->any())
-    //          ->method('getContent')
-    //          ->will($this->returnValue('Formatted message'));
-
-    //     $configurationMock = $this->getConfigurationMock();
-    //     $configurationMock->expects($this->any())
-    //         ->method('getGatewayConfigurationByApiName')
-    //         ->will($this->returnValue($gatewayConfigurationMock));
-        
-    //     $curlMock = $this->getCurlMock();
-    //     $smsComposerMock = $this->getSmsComposerMock();
-
-    //     $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway')
-    //         ->setConstructorArgs(array($configurationMock, $curlMock, $smsComposerMock))
-    //         ->getMockForAbstractClass();
-
-    //     $this->assertEquals(array(
-    //         'apikey' => 'ENGAGE_SPARK_API_KEY',
-    //         'organization_id' => 'ENGAGE_SPARK_ORG_ID',
-    //         'recipient_type' => 'contact_id',
-    //         'contact_ids' => '09173149060',
-    //         'message' => 'Formatted message',
-    //         'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
-    //         ), $stub->composeParameters($smsMock)
-    //     );
-    // }
-
-    /**
-     * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsGateway::composeParameters
-     */
-    // public function testComposeParametersForMobileNumbersRecipientType()
-    // {
-    //     $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
-    //     $gatewayConfigurationMock->expects($this->any())
-    //          ->method('getApiKey')
-    //          ->will($this->returnValue('ENGAGE_SPARK_API_KEY'));
-
-    //     $gatewayConfigurationMock->expects($this->any())
-    //          ->method('getOrganizationId')
-    //          ->will($this->returnValue('ENGAGE_SPARK_ORG_ID'));
-
-    //     $gatewayConfigurationMock->expects($this->any())
-    //          ->method('getRecipientType')
-    //          ->will($this->returnValue('mobile_numbers'));
-
-    //     $gatewayConfigurationMock->expects($this->any())
-    //          ->method('getSenderName')
-    //          ->will($this->returnValue('ENGAGE_SPARK_SENDER_NAME'));
-
-    //     $smsMock = $this->getSmsMock();
-    //     $smsMock->expects($this->any())
-    //          ->method('formatRecipient')
-    //          ->will($this->returnValue('09173149060'));
-
-    //     $smsMock->expects($this->any())
-    //          ->method('getContent')
-    //          ->will($this->returnValue('Formatted message'));
-
-    //     $configurationMock = $this->getConfigurationMock();
-    //     $configurationMock->expects($this->any())
-    //         ->method('getGatewayConfigurationByApiName')
-    //         ->will($this->returnValue($gatewayConfigurationMock));
-        
-    //     $curlMock = $this->getCurlMock();
-    //     $smsComposerMock = $this->getSmsComposerMock();
-
-    //     $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway')
-    //         ->setConstructorArgs(array($configurationMock, $curlMock, $smsComposerMock))
-    //         ->getMockForAbstractClass();
-
-    //     $this->assertEquals(array(
-    //         'apikey' => 'ENGAGE_SPARK_API_KEY',
-    //         'organization_id' => 'ENGAGE_SPARK_ORG_ID',
-    //         'recipient_type' => 'mobile_numbers',
-    //         'mobile_numbers' => '09173149060',
-    //         'message' => 'Formatted message',
-    //         'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
-    //         ), $stub->composeParameters($smsMock)
-    //     );
-    // }
 
     /**
      * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsGateway::send
@@ -261,86 +143,82 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
             ->method('isDeliveryEnabled')
             ->will($this->returnValue(false));
 
-        $value = null;
+        $expected = null;
+        $sut = new EngageSparkSmsGateway($configurationMock, $curlMock, $smsComposerMock);
+
+        $this->assertEquals($expected, $sut->send($smsMock));
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsGateway::send
+     */
+    public function testSendSuccess()
+    {
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        $smsMock = $this->getSmsMock();
+
+        $curlMock = $this->getCurlMock();
+        $curlMock->expects($this->any())
+            ->method('post')
+            ->will($this->returnValue('[]'));
+
+        $configurationMock = $this->getConfigurationMock();
+        $configurationMock->expects($this->any())
+            ->method('isDeliveryEnabled')
+            ->will($this->returnValue(true));
+
+        $configurationMock->expects($this->any())
+            ->method('getGatewayConfigurationByApiName')
+            ->will($this->returnValue($gatewayConfigurationMock));
+        
+        $smsComposerMock = $this->getSmsComposerMock();
+        $smsComposerMock->expects($this->any())
+            ->method('compose')
+            ->with($smsMock, $gatewayConfigurationMock)
+            ->will($this->returnValue(array($smsMock)));
+        
+        $sut = new EngageSparkSmsGateway($configurationMock, $curlMock, $smsComposerMock);
+
+        $this->assertTrue($sut->send($smsMock));
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsGateway::send
+     */
+    public function testSendThrowsException()
+    {
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        $smsMock = $this->getSmsMock();
+
+        $curlMock = $this->getCurlMock();
+        $curlMock->expects($this->any())
+            ->method('post')
+            ->will($this->returnValue(true));
+
+        $configurationMock = $this->getConfigurationMock();
+        $configurationMock->expects($this->any())
+            ->method('isDeliveryEnabled')
+            ->will($this->returnValue(true));
+
+        $configurationMock->expects($this->any())
+            ->method('getGatewayConfigurationByApiName')
+            ->will($this->returnValue($gatewayConfigurationMock));
+        
+        $smsComposerMock = $this->getSmsComposerMock();
+        $smsComposerMock->expects($this->any())
+            ->method('compose')
+            ->with($smsMock, $gatewayConfigurationMock)
+            ->will($this->returnValue(array($smsMock)));
+        
         $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway')
             ->setConstructorArgs(array($configurationMock, $curlMock, $smsComposerMock))
             ->getMockForAbstractClass();
 
-        $this->assertEquals($value, $stub->send($smsMock));
+        $stub->expects($this->any())
+            ->method('handleResult')
+            ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException('Request sending failed.')));
+
+        $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException');
+        $stub->send($smsMock);
     }
-
-    // /**
-    //  * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsGateway::composeParameters
-    //  */
-    // public function testSendSuccess()
-    // {
-    //     $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
-    //     $smsMock = $this->getSmsMock();
-
-    //     $curlMock = $this->getCurlMock();
-    //     $curlMock->expects($this->any())
-    //         ->method('post')
-    //         ->will($this->returnValue(true));
-
-    //     $configurationMock = $this->getConfigurationMock();
-    //     $configurationMock->expects($this->any())
-    //         ->method('isDeliveryEnabled')
-    //         ->will($this->returnValue(true));
-
-    //     $configurationMock->expects($this->any())
-    //         ->method('getGatewayConfigurationByApiName')
-    //         ->will($this->returnValue($gatewayConfigurationMock));
-        
-    //     $smsComposerMock = $this->getSmsComposerMock();
-    //     $smsComposerMock->expects($this->any())
-    //         ->method('compose')
-    //         ->with($smsMock, $gatewayConfigurationMock)
-    //         ->will($this->returnValue(array($smsMock)));
-        
-    //     $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway')
-    //         ->setConstructorArgs(array($configurationMock, $curlMock, $smsComposerMock))
-    //         ->getMockForAbstractClass();
-
-    //     $this->assertTrue($stub->send($smsMock));
-    // }
-
-    // /**
-    //  * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsGateway::send
-    //  */
-    // public function testSendThrowsException()
-    // {
-    //     $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
-    //     $smsMock = $this->getSmsMock();
-
-    //     $curlMock = $this->getCurlMock();
-    //     $curlMock->expects($this->any())
-    //         ->method('post')
-    //         ->will($this->returnValue(true));
-
-    //     $configurationMock = $this->getConfigurationMock();
-    //     $configurationMock->expects($this->any())
-    //         ->method('isDeliveryEnabled')
-    //         ->will($this->returnValue(true));
-
-    //     $configurationMock->expects($this->any())
-    //         ->method('getGatewayConfigurationByApiName')
-    //         ->will($this->returnValue($gatewayConfigurationMock));
-        
-    //     $smsComposerMock = $this->getSmsComposerMock();
-    //     $smsComposerMock->expects($this->any())
-    //         ->method('compose')
-    //         ->with($smsMock, $gatewayConfigurationMock)
-    //         ->will($this->returnValue(array($smsMock)));
-        
-    //     $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway')
-    //         ->setConstructorArgs(array($configurationMock, $curlMock, $smsComposerMock))
-    //         ->getMockForAbstractClass();
-
-    //     $stub->expects($this->any())
-    //         ->method('handleResult')
-    //         ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException('Request sending failed.')));
-
-    //     $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException');
-    //     $this->assertTrue($stub->send($smsMock));
-    // }
 }

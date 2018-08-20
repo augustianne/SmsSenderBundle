@@ -12,6 +12,7 @@
 namespace Yan\Bundle\SmsSenderBundle\Composer;
 
 use Yan\Bundle\SmsSenderBundle\Composer\Sms;
+use Yan\Bundle\SmsSenderBundle\Exception\InvalidGatewayParameterException;
 use Yan\Bundle\SmsSenderBundle\Tools\Accessor\ConfigurationAccessor;
 use Yan\Bundle\SmsSenderBundle\Tools\GatewayConfiguration;
 
@@ -28,11 +29,15 @@ abstract class SmsComposer
     
     protected $config;
 
+    protected $validParameters = array();
+    protected $requiredParameters = array();
+
     public function __construct(ConfigurationAccessor $config)
     {
         $this->config = $config;
     }
 
+    abstract public function composeSmsParameters(Sms $sms, GatewayConfiguration $gatewayConfiguration);
     abstract public function internationalizeNumbers(Sms $sms, GatewayConfiguration $gatewayConfiguration);
     abstract public function formatRecipientsForSending(Sms $sms, GatewayConfiguration $gatewayConfiguration);
 
@@ -131,6 +136,39 @@ abstract class SmsComposer
         }
 
         return array_reverse($smses);
+    }
+
+    /**
+     * Validate parameters based on gateway requirement
+     *
+     * @param Sms $sms
+     * @return void
+     * @throws InvalidGatewayParameterException
+     */ 
+    public function validateRequiredParameters($parameters)
+    {
+        $invalid = array();
+
+        $diff = array_diff($this->requiredParameters, array_keys($parameters));
+        if (!empty($diff)) {
+            throw new InvalidGatewayParameterException(sprintf(
+                "The following parameters are required and should be present: [%s]",
+                implode(', ', $diff)
+            ));
+        }
+
+        foreach ($parameters as $key => $parameter) {
+            if (in_array($key, $this->requiredParameters) && empty($parameter)) {
+                $invalid[] = $key;
+            }
+        }
+
+        if (!empty($invalid)) {
+            throw new InvalidGatewayParameterException(sprintf(
+                "The following parameters are required and should not be left blank: [%s]",
+                implode(', ', $invalid)
+            ));
+        }
     }
 
 }
