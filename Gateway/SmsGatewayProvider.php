@@ -29,8 +29,14 @@ class SmsGatewayProvider
     {
         $this->config = $config;
 
+        
+
         foreach ($smsGateways as $smsGateway) {
-            $this->smsGateways[$smsGateway->getName()] = $smsGateway;
+            $gatewayId = $this->config->getGatewayIdByApiName($smsGateway->getName());
+
+            if (!is_null($gatewayId)) {
+                $this->smsGateways[$gatewayId] = $smsGateway;
+            }
         }
     }
 

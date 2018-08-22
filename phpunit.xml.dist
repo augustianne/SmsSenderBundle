@@ -2,8 +2,26 @@
 
 <phpunit colors="true" bootstrap="./vendor/autoload.php">
     <testsuites>
-        <testsuite name="SmsSenderBundle">
+        <testsuite name="All">
             <directory>./Tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <testsuites>
+        <testsuite name="Functional">
+            <directory>./Tests/Functional</directory>
+        </testsuite>
+    </testsuites>
+
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>./Tests/Unit</directory>
+        </testsuite>
+    </testsuites>
+
+    <testsuites>
+        <testsuite name="Integration">
+            <directory>./Tests/Integration</directory>
         </testsuite>
     </testsuites>
 

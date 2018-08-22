@@ -35,7 +35,8 @@ class Curl
     {
         $curlRequest = new CurlRequest($url);
         $curlRequest->setOption(CURLOPT_RETURNTRANSFER, true);
-        $curlRequest->setOption(CURLOPT_HEADER, $headers);
+        // $curlRequest->setOption(CURLOPT_HEADER, 0);
+        $curlRequest->setOption(CURLOPT_HTTPHEADER, $headers);
         $curlRequest->setOption(CURLOPT_VERBOSE, 0);
         $curlRequest->setOption(CURLOPT_POST, true);
         $curlRequest->setOption(CURLOPT_POSTFIELDS, $parameters);

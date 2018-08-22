@@ -47,11 +47,11 @@ class EngageSparkSmsGateway extends SmsGateway
                 $this->getUrl(), 
                 $this->smsComposer->composeSmsParameters($iSms, $gatewayConfiguration),
                 array(
-                    'Authorization' => $gatewayConfiguration->getApiKey(),
-                    'Content-type' => 'application/json'
+                    sprintf('Authorization: Token %s', $gatewayConfiguration->getApiKey()),
+                    'Content-type: application/json'
                 )
             );
-
+            
             try {
                 $this->handleResult($result);
             } catch(DeliveryFailureException $e) {
@@ -61,6 +61,34 @@ class EngageSparkSmsGateway extends SmsGateway
         }
 
         return true;
+    }
+
+    /**
+     * Retrieves sms credits left on account
+     *
+     * @throws DeliveryFailureException
+     * @return int
+     */ 
+    public function getAccountBalance()
+    {
+        $gatewayConfiguration = $this->getGatewayConfiguration();
+
+        $result = $this->curl->get(
+            $this->getCreditUrl(),
+            array('apikey' => $gatewayConfiguration->getApiKey())
+        );
+        
+        $json = json_decode($result, true);
+        
+        if (!is_array($json)) {
+            throw new DeliveryFailureException('Request sending failed.');
+        }
+
+        if (!isset($json['credit_balance'])) {
+            throw new DeliveryFailureException('Request sending failed.');
+        }
+
+        return $json['credit_balance'];
     }
 
     /**
@@ -76,9 +104,13 @@ class EngageSparkSmsGateway extends SmsGateway
         if (!is_array($json)) {
             throw new DeliveryFailureException('Request sending failed.', $json);
         }
-        
-        // if (!isset($json[0]['status']) || $json[0]['status'] === 'Failed') {
-        //     throw new DeliveryFailureException('Request sending failed.', $json);   
-        // }
+
+        if (isset($json['detail']) && $json['detail'] == 'Authentication credentials were not provided.') {
+            throw new DeliveryFailureException($json['detail'], $json);
+        }
+
+        if (isset($json['error'])) {
+            throw new DeliveryFailureException($json['error'], $json);
+        }
     }
 }

@@ -22,9 +22,44 @@ use Yan\Bundle\SmsSenderBundle\Gateway\SmsGateway;
  */
 class SemaphoreSmsGateway extends SmsGateway
 {
+    protected $creditUrl = 'https://api.semaphore.co/api/v4/account';
     protected $url;
     protected $name;
 
+    /**
+     * Retrieves sms credits left on account
+     *
+     * @throws DeliveryFailureException
+     * @return int
+     */ 
+    public function getAccountBalance()
+    {
+        $gatewayConfiguration = $this->getGatewayConfiguration();
+
+        $result = $this->curl->get(
+            $this->getCreditUrl(),
+            array('apikey' => $gatewayConfiguration->getApiKey())
+        );
+
+        $json = json_decode($result, true);
+
+        if (!is_array($json)) {
+            throw new DeliveryFailureException('Request sending failed.');
+        }
+
+        if (!isset($json['credit_balance'])) {
+            throw new DeliveryFailureException('Request sending failed.');
+        }
+
+        return $json['credit_balance'];
+    }
+
+    /**
+     * Handles results
+     *
+     * @param $result
+     * @throws DeliveryFailureException
+     */
     public function handleResult($result)
     {   
         $json = json_decode($result, true);

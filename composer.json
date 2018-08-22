@@ -12,8 +12,8 @@
     },
     "autoload" : {
         "psr-0" : {
-            "Yan\\Bundle\\SmsSenderBundle" : ""
+            "Yan\\Bundle\\YanSmsSenderBundle" : ""
         }
     },
-    "target-dir" : "Yan/Bundle/SmsSenderBundle"
+    "target-dir" : "Yan/Bundle/YanSmsSenderBundle"
 }

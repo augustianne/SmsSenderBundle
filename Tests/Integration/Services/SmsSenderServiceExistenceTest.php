@@ -19,6 +19,7 @@ class SmsSenderServiceExistenceTest extends \PHPUnit_Framework_TestCase
         'composer.lock',
         'CurlRequest.php', 
         'GatewayConfiguration.php',
+        'YanSmsSenderBundle.php',
         'LICENSE',
         'phpunit.xml.dist',
         'README.md',

@@ -108,11 +108,24 @@ class ConfigurationAccessor
      */
     public function getGatewayConfigurationByApiName($apiName)
     {
+        $gatewayId = $this->getGatewayIdByApiName($apiName);
+
+        return !is_null($gatewayId) ? $this->getGatewayConfigurationByGatewayId($gatewayId) : null;
+    }
+
+    /**
+     * Retrieves sms sender configuration id given the api name
+     *
+     * @param String
+     * @return String
+     */
+    public function getGatewayIdByApiName($apiName)
+    {
         $gateways = $this->getGateways();
 
         foreach ($gateways as $gatewayId => $gateway) {
-            if (isset($gateway[$apiName])) {
-                return $this->getGatewayConfigurationByGatewayId($gatewayId);
+            if ($gateway['api_name'] == $apiName) {
+                return $gatewayId;
             }
         }
 

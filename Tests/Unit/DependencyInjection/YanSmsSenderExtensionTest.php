@@ -2,7 +2,7 @@
 
 namespace Yan\Bundle\SmsSenderBundle\Tests\Unit\DependencyInjection;
 
-use Yan\Bundle\SmsSenderBundle\DependencyInjection\SmsSenderExtension;
+use Yan\Bundle\SmsSenderBundle\DependencyInjection\YanSmsSenderExtension;
 
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Scope;
 use Symfony\Component\HttpFoundation\Request;
 
-class SmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
+class YanSmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
 {
     private $sut;
     private $container;
@@ -18,7 +18,7 @@ class SmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
     
     protected function setUp()
     {
-        $this->sut = new SmsSenderExtension();
+        $this->sut = new YanSmsSenderExtension();
         $this->container = new ContainerBuilder();
         $this->root = 'yan_sms_sender';
     }

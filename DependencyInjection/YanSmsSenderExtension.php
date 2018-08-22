@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\Loader;
  * @author  Yan Barreta
  * @version dated: August 7, 2018
  */
-class SmsSenderExtension extends Extension
+class YanSmsSenderExtension extends Extension
 {
     /**
      * {@inheritDoc}
@@ -40,6 +40,15 @@ class SmsSenderExtension extends Extension
 
             $container->setParameter('yan_sms_sender.default_gateway_id', $config['default_gateway_id']);
         }
+
+        if (!is_null($config['backup_gateway_id'])) {
+            
+            if (!array_key_exists($config['backup_gateway_id'], $config['gateways'])) {
+                throw new InvalidConfigurationException('The value for backup_gateway_id must be a part of gateways list.');
+            }
+        }
+
+        $container->setParameter('yan_sms_sender.backup_gateway_id', $config['backup_gateway_id']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

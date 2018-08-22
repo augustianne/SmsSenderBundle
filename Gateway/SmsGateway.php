@@ -29,6 +29,7 @@ abstract class SmsGateway
 {
     protected $name;
     protected $url;
+    protected $creditUrl;
     protected $config;
     protected $curl;
     protected $smsComposer;
@@ -45,6 +46,11 @@ abstract class SmsGateway
         return $this->url;
     }
 
+    public function getCreditUrl()
+    {
+        return $this->creditUrl;
+    }
+
     public function getName()
     {
         return $this->name;
@@ -55,6 +61,7 @@ abstract class SmsGateway
         return $this->config->getGatewayConfigurationByApiName($this->getName());
     }
 
+    abstract public function getAccountBalance();
     abstract public function handleResult($result);
     
     /**

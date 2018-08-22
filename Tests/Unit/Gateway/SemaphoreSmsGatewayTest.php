@@ -57,6 +57,15 @@ class SemaphoreSmsGatewayTest extends \PHPUnit_Framework_TestCase
         return $smsComposerMock;
     }
 
+    public function getGatewayConfigurationMock()
+    {
+        $gatewayConfigurationMock = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Tools\GatewayConfiguration')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        return $gatewayConfigurationMock;
+    }
+
     public function getTestHandleResult()
     {
         return array(
@@ -67,6 +76,15 @@ class SemaphoreSmsGatewayTest extends \PHPUnit_Framework_TestCase
             array('test', true),
             array(array('status' => 'Failed'), true),
             array(array(array('status' => 'Failed')), true),
+        );
+    }
+
+    public function getTestGetAccountBalance()
+    {
+        return array(
+            array(array('credit_balance' => 2000), 2000, false),
+            array(array(array('credit_balance' => 2000)), 2000, true),
+            array(array('credit_balances' => 2000), 2000, true)
         );
     }
 
@@ -87,6 +105,45 @@ class SemaphoreSmsGatewayTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertEquals(null, $sut->handleResult(json_encode($result)));
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SemaphoreSmsGateway::getAccountBalance
+     * @dataProvider getTestGetAccountBalance
+     */
+    public function testGetAccountBalance($result, $expected, $throwException)
+    {
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        $gatewayConfigurationMock->expects($this->any())
+             ->method('getApiKey')
+             ->will($this->returnValue('API_KEY'));
+
+         $curlMock = $this->getCurlMock();
+        $curlMock->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue(json_encode($result)));
+
+        $configurationMock = $this->getConfigurationMock();
+        $configurationMock->expects($this->any())
+            ->method('getGatewayConfigurationByApiName')
+            ->will($this->returnValue($gatewayConfigurationMock));
+
+        $smsComposerMock = $this->getSmsComposerMock();
+
+        // $stub = new SemaphoreSmsGateway($configurationMock, $curlMock, $smsComposerMock);
+        $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\SemaphoreSmsGateway')
+            ->setConstructorArgs(array($configurationMock, $curlMock, $smsComposerMock))
+            ->getMockForAbstractClass();
+
+        $stub->expects($this->any())
+            ->method('getGatewayConfiguration')
+            ->will($this->returnValue($gatewayConfigurationMock));
+
+        if ($throwException) {
+            $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException');
+        }
+
+        $this->assertEquals($expected, $stub->getAccountBalance());
     }
 
     
