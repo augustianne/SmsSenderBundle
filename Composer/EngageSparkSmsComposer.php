@@ -61,7 +61,7 @@ class EngageSparkSmsComposer extends SmsComposer
             $recipientKey = 'contact_ids';
         }
 
-        $params[$recipientKey] = $formattedRecipients;
+        $params[$recipientKey] = $sms->getRecipients();//$formattedRecipients;
 
         $this->requiredParameters[] = $recipientKey;
         

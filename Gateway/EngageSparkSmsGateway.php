@@ -45,13 +45,13 @@ class EngageSparkSmsGateway extends SmsGateway
         foreach ($smses as $iSms) {
             $result = $this->curl->post(
                 $this->getUrl(), 
-                $this->smsComposer->composeSmsParameters($iSms, $gatewayConfiguration),
+                json_encode($this->smsComposer->composeSmsParameters($iSms, $gatewayConfiguration)),
                 array(
                     sprintf('Authorization: Token %s', $gatewayConfiguration->getApiKey()),
                     'Content-type: application/json'
                 )
             );
-            
+            var_dump($result);
             try {
                 $this->handleResult($result);
             } catch(DeliveryFailureException $e) {
