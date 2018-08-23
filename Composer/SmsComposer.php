@@ -39,7 +39,6 @@ abstract class SmsComposer
 
     abstract public function composeSmsParameters(Sms $sms, GatewayConfiguration $gatewayConfiguration);
     abstract public function internationalizeNumbers(Sms $sms, GatewayConfiguration $gatewayConfiguration);
-    abstract public function formatRecipientsForSending(Sms $sms, GatewayConfiguration $gatewayConfiguration);
 
     /**
      * Accepts a Sms object, splits it into Smss 
@@ -169,6 +168,19 @@ abstract class SmsComposer
                 implode(', ', $invalid)
             ));
         }
+    }
+
+    /**
+     * Compose recipients according to gateway rules
+     *
+     * @param Sms $sms
+     * @return void
+     */ 
+    public function formatRecipientsForSending(Sms $sms, GatewayConfiguration $gatewayConfiguration)
+    {
+        $recipients = $sms->getRecipients();
+
+        return implode(',', $recipients);
     }
 
 }

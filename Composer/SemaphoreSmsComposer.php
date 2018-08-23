@@ -62,17 +62,4 @@ class SemaphoreSmsComposer extends SmsComposer
     {
         return;
     }
-
-    /**
-     * Compose recipients according to gateway rules
-     *
-     * @param Sms $sms
-     * @return void
-     */ 
-    public function formatRecipientsForSending(Sms $sms, GatewayConfiguration $gatewayConfiguration)
-    {
-        $recipients = $sms->getRecipients();
-
-        return implode(',', $recipients);
-    }
 }

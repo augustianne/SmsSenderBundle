@@ -1,3 +1,4 @@
 # Cache and logs (Symfony2)
+composer.lock
 vendor
 Tests/Fixtures/config/*

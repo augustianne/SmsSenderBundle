@@ -37,7 +37,6 @@ class EngageSparkSmsComposer extends SmsComposer
      */ 
     public function composeSmsParameters(Sms $sms, GatewayConfiguration $gatewayConfiguration)
     {
-        $formattedRecipients = $this->formatRecipientsForSending($sms, $gatewayConfiguration);
         $formattedMessage = $sms->getContent();
         
         $params = array(
@@ -61,7 +60,7 @@ class EngageSparkSmsComposer extends SmsComposer
             $recipientKey = 'contact_ids';
         }
 
-        $params[$recipientKey] = $sms->getRecipients();//$formattedRecipients;
+        $params[$recipientKey] = $sms->getRecipients();
 
         $this->requiredParameters[] = $recipientKey;
         
@@ -136,27 +135,7 @@ class EngageSparkSmsComposer extends SmsComposer
     {
         $this->internationalizeNumbers($sms, $gatewayConfiguration);
 
-        $recipients = $sms->getRecipients();
-
-        if (empty($recipients)) {
-            return "[]";
-        }
-
-        return sprintf('["%s"]', implode('","', $recipients));
-    }
-
-    /**
-     * Compose recipients according to gateway rules
-     *
-     * @param Sms $sms
-     * @return void
-     */ 
-    public function formatRecipientsForDisplay(Sms $sms, GatewayConfiguration $gatewayConfiguration)
-    {
-        $this->internationalizeNumbers($sms, $gatewayConfiguration);
-        $recipients = $sms->getRecipients();
-
-        return implode(',', $recipients);
+        return parent::formatRecipientsForSending($sms, $gatewayConfiguration);
     }
 
     /**

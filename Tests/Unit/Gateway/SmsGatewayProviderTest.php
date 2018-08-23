@@ -84,32 +84,43 @@ class SmsGatewayProviderTest extends \PHPUnit_Framework_TestCase
              ->will($this->returnValue('SEMAPHORE_REGULAR'));
 
         return array(
-            'ENGAGE_SPARK' => $engageSparkSmsGateway,
-            'SEMAPHORE_PRIORITY' => $semaphorePrioritySmsGateway,
-            'SEMAPHORE_REGULAR' => $semaphoreRegularSmsGateway,
+            'ENGAGE_SPARK_ID' => $engageSparkSmsGateway,
+            'SEMAPHORE_PRIORITY_ID' => $semaphorePrioritySmsGateway,
+            'SEMAPHORE_REGULAR_ID' => $semaphoreRegularSmsGateway,
         );
     }
 
     public function getGatewayIds()
     {
         return array(
-            array('ENGAGE_SPARK', false),
-            array('ENGAGE_SPARKS', true),
-            array('SEMAPHORE_REGULAR', false),
-            array(null, true),
-            array('SEMAPHORE_PRIORITY', false),
-            array('SEMAPHORE_PRIORITIES', true),
+            array('ENGAGE_SPARK_ID', 'ENGAGE_SPARK', false),
+            array('ENGAGE_SPARKS', 'ENGAGE_SPARK', true),
+            array('SEMAPHORE_REGULAR_ID', 'SEMAPHORE_REGULAR', false),
+            array(null, 'ENGAGE_SPARK', true),
+            array('SEMAPHORE_PRIORITY_ID', 'SEMAPHORE_PRIORITY', false),
+            array('SEMAPHORE_PRIORITIES', 'SEMAPHORE_PRIORITY', true),
         );
     }
 
     /**
-     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SmsGatewayProvider::getUrl
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SmsGatewayProvider::getGatewayById
      * @dataProvider getGatewayIds
      */
-    public function testGetGatewayById($gatewayId, $throwsException)
+    public function testGetGatewayById($gatewayId, $apiName, $throwsException)
     {
-        $configurationMock = $this->getConfigurationMock();
         $gatewayMocks = $this->getGatewayMocks();
+
+        $configurationMock = $this->getConfigurationMock();
+
+        $i = 0;
+        foreach ($gatewayMocks as $iGatewayId => $gateway) {
+            $configurationMock->expects($this->at($i))
+                ->method('getGatewayIdByApiName')
+                ->with($gateway->getName())
+                ->will($this->returnValue($iGatewayId));
+
+            $i++;
+        }
 
         $sut = new SmsGatewayProvider($configurationMock, $gatewayMocks);
 
@@ -119,22 +130,32 @@ class SmsGatewayProviderTest extends \PHPUnit_Framework_TestCase
 
         $actualGateway = $sut->getGatewayById($gatewayId);
         $expectedGateway = $gatewayMocks[$gatewayId];
-
+        
         $this->assertEquals($expectedGateway, $actualGateway);
     }
 
     /**
-     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SmsGatewayProvider::getUrl
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SmsGatewayProvider::getDefaultGateway
      * @dataProvider getGatewayIds
      */
-    public function testGetDefaultGateway($gatewayId, $throwsException)
+    public function testGetDefaultGateway($gatewayId, $apiName, $throwsException)
     {
+        $gatewayMocks = $this->getGatewayMocks();
+
         $configurationMock = $this->getConfigurationMock();
         $configurationMock->expects($this->any())
-             ->method('getDefaultGatewayId')
-             ->will($this->returnValue($gatewayId));
+            ->method('getDefaultGatewayId')
+            ->will($this->returnValue($gatewayId));
 
-        $gatewayMocks = $this->getGatewayMocks();
+        $i = 0;
+        foreach ($gatewayMocks as $iGatewayId => $gateway) {
+            $configurationMock->expects($this->at($i))
+                ->method('getGatewayIdByApiName')
+                ->with($gateway->getName())
+                ->will($this->returnValue($iGatewayId));
+
+            $i++;
+        }
 
         $sut = new SmsGatewayProvider($configurationMock, $gatewayMocks);
 
@@ -142,32 +163,42 @@ class SmsGatewayProviderTest extends \PHPUnit_Framework_TestCase
             $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\GatewayNotFoundException');
         }
 
-        $actualGateway = $sut->getGatewayById($gatewayId);
+        $actualGateway = $sut->getDefaultGateway();
         $expectedGateway = $gatewayMocks[$gatewayId];
 
         $this->assertEquals($expectedGateway, $actualGateway);
     }
 
     /**
-     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SmsGatewayProvider::getUrl
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SmsGatewayProvider::getBackupGateway
      * @dataProvider getGatewayIds
      */
-    public function testGetBackupGateway($gatewayId, $throwsException)
+    public function testGetBackupGateway($gatewayId, $apiName, $throwsException)
     {
-        $configurationMock = $this->getConfigurationMock();
-        $configurationMock->expects($this->any())
-             ->method('getBackupGatewayId')
-             ->will($this->returnValue($gatewayId));
-             
         $gatewayMocks = $this->getGatewayMocks();
 
+        $configurationMock = $this->getConfigurationMock();
+        $configurationMock->expects($this->any())
+            ->method('getBackupGatewayId')
+            ->will($this->returnValue($gatewayId));
+
+        $i = 0;
+        foreach ($gatewayMocks as $iGatewayId => $gateway) {
+            $configurationMock->expects($this->at($i))
+                ->method('getGatewayIdByApiName')
+                ->with($gateway->getName())
+                ->will($this->returnValue($iGatewayId));
+
+            $i++;
+        }
+        
         $sut = new SmsGatewayProvider($configurationMock, $gatewayMocks);
 
         if ($throwsException) {
             $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\GatewayNotFoundException');
         }
 
-        $actualGateway = $sut->getGatewayById($gatewayId);
+        $actualGateway = $sut->getBackupGateway();
         $expectedGateway = $gatewayMocks[$gatewayId];
 
         $this->assertEquals($expectedGateway, $actualGateway);

@@ -53,7 +53,11 @@ class YanSmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
                 array($this->root => array(
                     'default_gateway_id' => 'ME', 
                     'gateways' => array(
-                        'SENDER1' => array()
+                        'SENDER1' => array(
+                            'api_name' => 'ENGAGE_SPARK',
+                            'api_key' => 'APIKEY',
+                            'sender_name' => 'test'
+                        )
                     )
                 )), 
                 'The value for default_gateway_id must be a part of gateways list.',
@@ -83,7 +87,12 @@ class YanSmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
                 array($this->root => array(
                     'default_gateway_id' => 'SENDER1', 
                     'gateways' => array(
-                        'SENDER1' => array('recipient_type' => 'NOT_SUPPORTED')
+                        'SENDER1' => array(
+                            'api_name' => 'ENGAGE_SPARK',
+                            'api_key' => 'APIKEY',
+                            'sender_name' => 'test',
+                            'recipient_type' => 'NOT_SUPPORTED'
+                        )
                     )
                 )), 
                 'The "NOT_SUPPORTED" recipient type is not supported',
@@ -113,8 +122,11 @@ class YanSmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
                 'gateways' => array(
                     'SENDER' => array(
                         'api_key' => 'APIKEY',
+                        'api_name' => 'ENGAGE_SPARK',
                         'truncate_sms' => false,
-                        'default_country_code' => '63'
+                        'sender_name' => 'SENDER_NAME',
+                        'default_country_code' => '63',
+                        'test_delivery_numbers' => array()
                     )
                 )
             )
@@ -143,7 +155,9 @@ class YanSmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
                     'sender1' => array(
                         'api_key' => 'APIKEY',
                         'truncate_sms' => false,
-                        'default_country_code' => '63'
+                        'sender_name' => 'SENDER_NAME',
+                        'default_country_code' => '63',
+                        'test_delivery_numbers' => array()
                     )
                 )
             )

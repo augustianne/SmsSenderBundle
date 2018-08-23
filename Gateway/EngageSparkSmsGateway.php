@@ -51,7 +51,7 @@ class EngageSparkSmsGateway extends SmsGateway
                     'Content-type: application/json'
                 )
             );
-            var_dump($result);
+            
             try {
                 $this->handleResult($result);
             } catch(DeliveryFailureException $e) {

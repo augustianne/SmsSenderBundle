@@ -108,14 +108,14 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
     public function getTestFormatRecipientsForSending()
     {
         return array(
-            array(array('63.917.314.9060'), '["639173149060"]'),
-            array(array('0917-314-9060'), '["639173149060"]'),
-            array(array('+659995314906'), '["659995314906"]'),
-            array(array('+6309173149060'), '[]'),
-            array(array('09173149060'), '["639173149060"]'),
-            array(array('+639995314906'), '["639995314906"]'),
-            array(array('+639995314906', '+6309995314906'), '["639995314906"]'),
-            array(array('+639995314906', '09995314907'), '["639995314906","639995314907"]'),
+            array(array('63.917.314.9060'), '639173149060'),
+            array(array('0917-314-9060'), '639173149060'),
+            array(array('+659995314906'), '659995314906'),
+            array(array('+6309173149060'), ''),
+            array(array('09173149060'), '639173149060'),
+            array(array('+639995314906'), '639995314906'),
+            array(array('+639995314906', '+6309995314906'), '639995314906'),
+            array(array('+639995314906', '09995314907'), '639995314906,639995314907'),
         );
     }
 
@@ -130,12 +130,12 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
                     'recipients' => array('09173149060'),
                     'message' => 'Formatted message',
                     'sender_id' => 'ENGAGE_SPARK_SENDER_NAME',
-                    'formatted_recipients' => '["09173149060"]'
+                    'formatted_recipients' => '09173149060'
                 ),
                 array(
                     'organization_id' => 'ENGAGE_SPARK_ORG_ID',
                     'recipient_type' => 'contact_id',
-                    'contact_ids' => '["09173149060"]',
+                    'contact_ids' => array('09173149060'),
                     'message' => 'Formatted message',
                     'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
                 ), false
@@ -148,12 +148,12 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
                     'recipients' => array('639173149060'),
                     'message' => 'Formatted message',
                     'sender_id' => 'ENGAGE_SPARK_SENDER_NAME',
-                    'formatted_recipients' => '["639173149060"]'
+                    'formatted_recipients' => '639173149060'
                 ),
                 array(
                     'organization_id' => 'ENGAGE_SPARK_ORG_ID',
                     'recipient_type' => 'mobile_number',
-                    'mobile_numbers' => '["639173149060"]',
+                    'mobile_numbers' => array('639173149060'),
                     'message' => 'Formatted message',
                     'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
                 ), false
@@ -166,12 +166,12 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
                     'recipients' => array('09173149060'),
                     'message' => 'Formatted message',
                     'sender_id' => 'ENGAGE_SPARK_SENDER_NAME',
-                    'formatted_recipients' => '["639173149060"]'
+                    'formatted_recipients' => '639173149060'
                 ),
                 array(
                     'organization_id' => 'ENGAGE_SPARK_ORG_ID',
                     'recipient_type' => 'mobile_number',
-                    'mobile_numbers' => '["639173149060"]',
+                    'mobile_numbers' => array('639173149060'),
                     'message' => 'Formatted message',
                     'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
                 ), true
@@ -183,12 +183,12 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
                     'recipients' => array('09173149060'),
                     'message' => 'Formatted message',
                     'sender_id' => 'ENGAGE_SPARK_SENDER_NAME',
-                    'formatted_recipients' => '["639173149060"]'
+                    'formatted_recipients' => '639173149060'
                 ),
                 array(
                     'organization_id' => 'ENGAGE_SPARK_ORG_ID',
                     'recipient_type' => 'mobile_number',
-                    'mobile_numbers' => '["639173149060"]',
+                    'mobile_numbers' => array('639173149060'),
                     'message' => 'Formatted message',
                     'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
                 ), true
@@ -201,12 +201,12 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
                     'recipients' => array(),
                     'message' => 'Formatted message',
                     'sender_id' => 'ENGAGE_SPARK_SENDER_NAME',
-                    'formatted_recipients' => '["639173149060"]'
+                    'formatted_recipients' => '639173149060'
                 ),
                 array(
                     'organization_id' => 'ENGAGE_SPARK_ORG_ID',
                     'recipient_type' => 'mobile_number',
-                    'contact_ids' => '["639173149060"]',
+                    'contact_ids' => array('639173149060'),
                     'message' => 'Formatted message',
                     'sender_id' => 'ENGAGE_SPARK_SENDER_NAME'
                 ), true
