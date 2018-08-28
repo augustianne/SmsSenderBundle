@@ -122,7 +122,7 @@ class ConfigurationAccessor
     public function getGatewayIdByApiName($apiName)
     {
         $gateways = $this->getGateways();
-var_dump($gateways);
+
         foreach ($gateways as $gatewayId => $gateway) {
             if ($gateway['api_name'] == $apiName) {
                 return $gatewayId;

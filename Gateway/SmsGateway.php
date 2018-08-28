@@ -61,39 +61,7 @@ abstract class SmsGateway
         return $this->config->getGatewayConfigurationByApiName($this->getName());
     }
 
+    abstract public function send(Sms $sms);
     abstract public function getAccountBalance();
     abstract public function handleResult($result);
-    
-    /**
-     * Sends actual sms
-     *
-     * @param Sms $sms
-     * @return void
-     * @throws Exception
-     */ 
-    public function send(Sms $sms)
-    {
-        if (!$this->config->isDeliveryEnabled()) {
-            return;
-        }
-
-        $gatewayConfiguration = $this->getGatewayConfiguration();
-        $smses = $this->smsComposer->compose($sms, $gatewayConfiguration);
-
-        foreach ($smses as $iSms) {
-            $result = $this->curl->post(
-                $this->getUrl(), 
-                $this->smsComposer->composeSmsParameters($iSms, $gatewayConfiguration)
-            );
-
-            try {
-                $this->handleResult($result);
-            } catch(DeliveryFailureException $e) {
-                throw $e;
-            }
-            
-        }
-
-        return true;
-    }
 }

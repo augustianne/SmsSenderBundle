@@ -31,11 +31,11 @@ class Curl
         }
     }
 
-    public function post($url, $parameters=array(), $headers=array())
+    public function post($url, $parameters=array(), $headers=array(), $allowOutputHeaders=false)
     {
         $curlRequest = new CurlRequest($url);
         $curlRequest->setOption(CURLOPT_RETURNTRANSFER, true);
-        // $curlRequest->setOption(CURLOPT_HEADER, 0);
+        $curlRequest->setOption(CURLOPT_HEADER, $allowOutputHeaders);
         $curlRequest->setOption(CURLOPT_HTTPHEADER, $headers);
         $curlRequest->setOption(CURLOPT_VERBOSE, 0);
         $curlRequest->setOption(CURLOPT_POST, true);
@@ -48,14 +48,16 @@ class Curl
         return $result;
     }
 
-    public function get($url, $parameters = array())
+    public function get($url, $parameters=array(), $headers=array(), $allowOutputHeaders=false)
     {
         $formattedUrl = sprintf("%s?%s", $url, http_build_query($parameters));
 
         $curlRequest = new CurlRequest($url);
         $curlRequest->setOption(CURLOPT_URL, $formattedUrl);
+        $curlRequest->setOption(CURLOPT_HEADER, $allowOutputHeaders);
         $curlRequest->setOption(CURLOPT_FOLLOWLOCATION, true);
         $curlRequest->setOption(CURLOPT_RETURNTRANSFER, true);
+        $curlRequest->setOption(CURLOPT_HTTPHEADER, $headers);
         
         $result = $curlRequest->execute();
         

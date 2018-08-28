@@ -24,6 +24,7 @@ use Yan\Bundle\SmsSenderBundle\Gateway\SmsGateway;
 class EngageSparkSmsGateway extends SmsGateway
 {
     protected $url = 'https://start.engagespark.com/api/v1/messages/sms';
+    protected $creditUrl = 'https://start.engagespark.com/api/v1/%s/available-balance';
     protected $name = 'ENGAGE_SPARK';
 
     /**
@@ -41,7 +42,6 @@ class EngageSparkSmsGateway extends SmsGateway
 
         $gatewayConfiguration = $this->getGatewayConfiguration();
         $smses = $this->smsComposer->compose($sms, $gatewayConfiguration);
-
         foreach ($smses as $iSms) {
             $result = $this->curl->post(
                 $this->getUrl(), 
@@ -74,8 +74,12 @@ class EngageSparkSmsGateway extends SmsGateway
         $gatewayConfiguration = $this->getGatewayConfiguration();
 
         $result = $this->curl->get(
-            $this->getCreditUrl(),
-            array('apikey' => $gatewayConfiguration->getApiKey())
+            sprintf($this->getCreditUrl(), $gatewayConfiguration->getOrganizationId()),
+            array(),
+            array(
+                'Key: Authorization',
+                sprintf('Value: Token %s', $gatewayConfiguration->getApiKey())
+            )
         );
         
         $json = json_decode($result, true);
@@ -100,17 +104,24 @@ class EngageSparkSmsGateway extends SmsGateway
     public function handleResult($result)
     {   
         $json = json_decode($result, true);
-        
-        if (!is_array($json)) {
-            throw new DeliveryFailureException('Request sending failed.', $json);
-        }
 
-        if (isset($json['detail']) && $json['detail'] == 'Authentication credentials were not provided.') {
-            throw new DeliveryFailureException($json['detail'], $json);
-        }
+        if (!empty($json)) {
+            if (!is_array($json)) {
+                throw new DeliveryFailureException('Request sending failed.', $json);
+            }
 
-        if (isset($json['error'])) {
-            throw new DeliveryFailureException($json['error'], $json);
+            if (isset($json['failed'])) {
+                $message = isset($json['message']) ? $json['message'] : 'Request sending failed.';
+                throw new DeliveryFailureException($message, $json);
+            }
+
+            if (isset($json['detail']) && $json['detail'] == 'Authentication credentials were not provided.') {
+                throw new DeliveryFailureException($json['detail'], $json);
+            }
+
+            if (isset($json['error'])) {
+                throw new DeliveryFailureException($json['error'], $json);
+            }    
         }
     }
 }

@@ -75,6 +75,28 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
         return $gatewayConfigurationMock;
     }
 
+    public function getTestHandleResult()
+    {
+        return array(
+            array(array(array('status' => 'Success')), false),
+            array("", false),
+            array(null, false),
+            array(array('detail' => 'Authentication credentials were not provided.'), true),
+            array(array('error' => 'Any error'), true),
+            array(true, true),
+            array('test', true)
+        );
+    }
+
+    public function getTestGetAccountBalance()
+    {
+        return array(
+            array(array('credit_balance' => 2000), 2000, false),
+            array(array(array('credit_balance' => 2000)), 2000, true),
+            array(array('credit_balances' => 2000), 2000, true)
+        );
+    }
+
     /**
      * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsGateway::getUrl
      */
@@ -220,5 +242,33 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException');
         $stub->send($smsMock);
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsGateway::handleResult
+     * @dataProvider getTestHandleResult
+     */
+    public function testHandleResult($result, $throwException)
+    {
+        $curlMock = $this->getCurlMock();
+        $configurationMock = $this->getConfigurationMock();
+        $smsComposerMock = $this->getSmsComposerMock();
+
+        $sut = new EngageSparkSmsGateway($configurationMock, $curlMock, $smsComposerMock);
+        
+        if ($throwException) {
+            $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException');
+        }
+
+        $this->assertEquals(null, $sut->handleResult(json_encode($result)));
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsGateway::getAccountBalance
+     * @dataProvider getTestGetAccountBalance
+     */
+    public function testGetAccountBalance($result, $expected, $throwException)
+    {
+        $this->markTestSkipped();
     }
 }

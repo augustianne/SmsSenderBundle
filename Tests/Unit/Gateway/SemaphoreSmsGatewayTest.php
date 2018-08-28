@@ -48,6 +48,15 @@ class SemaphoreSmsGatewayTest extends \PHPUnit_Framework_TestCase
         return $curlMock;
     }
 
+    public function getSmsMock()
+    {
+        $smsMock = $this->getMockBuilder('Yan\Bundle\SmsSenderBundle\Composer\Sms')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        return $smsMock;
+    }
+
     public function getSmsComposerMock()
     {
         $smsComposerMock = $this->getMockBuilder('Yan\Bundle\SmsSenderBundle\Composer\SemaphoreSmsComposer')
@@ -146,5 +155,76 @@ class SemaphoreSmsGatewayTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $stub->getAccountBalance());
     }
 
-    
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SemaphoreSmsGateway::send
+     */
+    public function testSendSuccess()
+    {
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        $smsMock = $this->getSmsMock();
+
+        $curlMock = $this->getCurlMock();
+        $curlMock->expects($this->any())
+            ->method('post')
+            ->will($this->returnValue('[{"status":"Success"}]'));
+
+        $configurationMock = $this->getConfigurationMock();
+        $configurationMock->expects($this->any())
+            ->method('isDeliveryEnabled')
+            ->will($this->returnValue(true));
+
+        $configurationMock->expects($this->any())
+            ->method('getGatewayConfigurationByApiName')
+            ->will($this->returnValue($gatewayConfigurationMock));
+        
+        $smsComposerMock = $this->getSmsComposerMock();
+        $smsComposerMock->expects($this->any())
+            ->method('compose')
+            ->with($smsMock, $gatewayConfigurationMock)
+            ->will($this->returnValue(array($smsMock)));
+        
+        $sut = new SemaphoreSmsGateway($configurationMock, $curlMock, $smsComposerMock);
+
+        $this->assertTrue($sut->send($smsMock));
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SemaphoreSmsGateway::send
+     */
+    public function testSendThrowsException()
+    {
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        $smsMock = $this->getSmsMock();
+
+        $curlMock = $this->getCurlMock();
+        $curlMock->expects($this->any())
+            ->method('post')
+            ->will($this->returnValue(true));
+
+        $configurationMock = $this->getConfigurationMock();
+        $configurationMock->expects($this->any())
+            ->method('isDeliveryEnabled')
+            ->will($this->returnValue(true));
+
+        $configurationMock->expects($this->any())
+            ->method('getGatewayConfigurationByApiName')
+            ->will($this->returnValue($gatewayConfigurationMock));
+        
+        $smsComposerMock = $this->getSmsComposerMock();
+        $smsComposerMock->expects($this->any())
+            ->method('compose')
+            ->with($smsMock, $gatewayConfigurationMock)
+            ->will($this->returnValue(array($smsMock)));
+        
+        $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway')
+            ->setConstructorArgs(array($configurationMock, $curlMock, $smsComposerMock))
+            ->getMockForAbstractClass();
+
+        $stub->expects($this->any())
+            ->method('handleResult')
+            ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException('Request sending failed.')));
+
+        $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException');
+        $stub->send($smsMock);
+    }
 }

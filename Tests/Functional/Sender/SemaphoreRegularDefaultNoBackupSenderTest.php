@@ -69,7 +69,7 @@ class SemaphoreRegularDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestC
         $smsSender = $this->container->get('yan_sms_sender.sender.sms');
 
         // $sent = $smsSender->send($sms);
-        $sent = true;
-        $this->assertTrue($sent);
+        // $this->assertTrue($sent);
+        $this->markTestSkipped();
     }
 }
