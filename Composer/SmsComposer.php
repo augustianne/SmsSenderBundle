@@ -52,7 +52,7 @@ abstract class SmsComposer
         $testDeliveryNumbers = $gatewayConfiguration->getTestDeliveryNumbers();
 
         if (!empty($testDeliveryNumbers)) {
-            $formattedSms = sprintf('Sent to: %s. %s', $this->formatRecipientsForSending($sms, $gatewayConfiguration), $sms->getContent());
+            $formattedSms = sprintf('Recipients: %s. Gateway: %s. Message: %s', $this->formatRecipientsForSending($sms, $gatewayConfiguration), $gatewayConfiguration->getApiName(), $sms->getContent());
 
             $sms->setContent($formattedSms);
             $sms->setRecipients($testDeliveryNumbers);

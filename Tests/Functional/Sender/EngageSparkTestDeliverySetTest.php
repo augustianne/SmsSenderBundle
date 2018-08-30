@@ -26,14 +26,14 @@ use Symfony\Component\Filesystem\Filesystem;
  * @author  Yan Barreta
  * @version dated: April 30, 2015 3:55:29 PM
  */
-class SemaphoreRegularDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestCase
+class EngageSparkTestDeliverySetTest extends \PHPUnit_Framework_TestCase
 {
     private $container;
     private $kernel;
 
     public function setUp()
     {
-        $this->kernel = new AppKernel('semaphore_regular_default_no_backup', true);
+        $this->kernel = new AppKernel('engage_spark_test_delivery_set', true);
         $this->kernel->boot();
         
         $this->container = $this->kernel->getContainer();
@@ -46,7 +46,7 @@ class SemaphoreRegularDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestC
     public function getMessageDefaultSenderData()
     {
         return array(
-            array(array('09173149060'), 'Test message 1.'),
+            array(array('09173222385'), 'Test message 1.'),
             // array(array('09173149060', '09173149060', '09173222385'), 'Test message 2.'),
             // array(array('09173149060', '09173222385'), 'Test message 3.'),
             // array(array('09173149060', '09173149060'), 'Test message 4.')
@@ -60,7 +60,7 @@ class SemaphoreRegularDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestC
     public function testSend($numbers, $content)
     {
         $sms = new Sms();
-        $sms->setContent('Semaphore Regular: '.$content);
+        $sms->setContent('Engage Spark: '.$content);
 
         foreach ($numbers as $number) {
             $sms->addRecipient($number);
@@ -70,15 +70,5 @@ class SemaphoreRegularDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestC
 
         // $this->assertTrue($smsSender->send($sms));
         $this->markTestSkipped();
-    }
-
-    /**
-     * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::getAccountBalance
-     */
-    public function testGetAccountBalance()
-    {
-        $smsSender = $this->container->get('yan_sms_sender.sender.sms');
-
-        $this->assertTrue(is_numeric($smsSender->getAccountBalance()));
     }
 }

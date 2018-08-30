@@ -26,14 +26,14 @@ use Symfony\Component\Filesystem\Filesystem;
  * @author  Yan Barreta
  * @version dated: April 30, 2015 3:55:29 PM
  */
-class SemaphoreRegularDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestCase
+class SemaphorePriorityDefaultEngageSparkBackupSenderTestSetTest extends \PHPUnit_Framework_TestCase
 {
     private $container;
     private $kernel;
 
     public function setUp()
     {
-        $this->kernel = new AppKernel('semaphore_regular_default_no_backup', true);
+        $this->kernel = new AppKernel('semaphore_priority_default_engage_spark_backup_test', true);
         $this->kernel->boot();
         
         $this->container = $this->kernel->getContainer();
@@ -60,7 +60,7 @@ class SemaphoreRegularDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestC
     public function testSend($numbers, $content)
     {
         $sms = new Sms();
-        $sms->setContent('Semaphore Regular: '.$content);
+        $sms->setContent('With backup: '.$content);
 
         foreach ($numbers as $number) {
             $sms->addRecipient($number);
@@ -70,15 +70,5 @@ class SemaphoreRegularDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestC
 
         // $this->assertTrue($smsSender->send($sms));
         $this->markTestSkipped();
-    }
-
-    /**
-     * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::getAccountBalance
-     */
-    public function testGetAccountBalance()
-    {
-        $smsSender = $this->container->get('yan_sms_sender.sender.sms');
-
-        $this->assertTrue(is_numeric($smsSender->getAccountBalance()));
     }
 }

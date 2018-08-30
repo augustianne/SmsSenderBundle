@@ -37,11 +37,12 @@ class SmsSender
     }
 
     /**
-     * Send sms using the set gateway
+     * Send sms using the default gateway
      *
      * @param Sms $sms
      * @return void
-     * @throws Exception
+     * @throws GatewayNotFoundException
+     * @throws DeliveryFailureException
      */ 
     public function send(Sms $sms)
     {
@@ -61,11 +62,54 @@ class SmsSender
         }
     }
 
-    public function sendViaBackupGateway($sms)
+    /**
+     * Send sms using the backup gateway
+     *
+     * @param Sms $sms
+     * @return void
+     * @throws GatewayNotFoundException
+     * @throws DeliveryFailureException
+     */
+    public function sendViaBackupGateway(Sms $sms)
     {
         try {
             $gateway = $this->smsGatewayProvider->getBackupGateway();
             return $gateway->send($sms);
+        }
+        catch (GatewayNotFoundException $e) {
+            throw new DeliveryFailureException();
+        }
+        catch (DeliveryFailureException $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * Retrieves balance of default gateway
+     *
+     * @return void
+     * @throws GatewayNotFoundException
+     * @throws DeliveryFailureException
+     */
+    public function getAccountBalance()
+    {
+        try {
+            $defaultSmsGateway = $this->smsGatewayProvider->getDefaultGateway();
+            return $defaultSmsGateway->getAccountBalance();
+        }
+        catch (GatewayNotFoundException $e) {
+            return $this->getBackupAccountBalance();
+        }
+        catch (DeliveryFailureException $e) {
+            return $this->getBackupAccountBalance();
+        }
+    }
+
+    public function getBackupAccountBalance()
+    {
+        try {
+            $gateway = $this->smsGatewayProvider->getBackupGateway();
+            return $gateway->getAccountBalance();
         }
         catch (GatewayNotFoundException $e) {
             throw new DeliveryFailureException();

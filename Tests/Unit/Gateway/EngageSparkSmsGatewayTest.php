@@ -91,9 +91,9 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
     public function getTestGetAccountBalance()
     {
         return array(
-            array(array('credit_balance' => 2000), 2000, false),
-            array(array(array('credit_balance' => 2000)), 2000, true),
-            array(array('credit_balances' => 2000), 2000, true)
+            array('{"balance": "99.92"}', 99.92, false),
+            array('{"balance": "2000"}', 2000, false),
+            array('{"balances": "99.92"}', 2000, true)
         );
     }
 
@@ -269,6 +269,36 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetAccountBalance($result, $expected, $throwException)
     {
-        $this->markTestSkipped();
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        $gatewayConfigurationMock->expects($this->any())
+             ->method('getApiKey')
+             ->will($this->returnValue('API_KEY'));
+
+         $curlMock = $this->getCurlMock();
+        $curlMock->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue($result));
+
+        $configurationMock = $this->getConfigurationMock();
+        $configurationMock->expects($this->any())
+            ->method('getGatewayConfigurationByApiName')
+            ->will($this->returnValue($gatewayConfigurationMock));
+
+        $smsComposerMock = $this->getSmsComposerMock();
+
+        // $stub = new SemaphoreSmsGateway($configurationMock, $curlMock, $smsComposerMock);
+        $stub = $this->getMockBuilder('\Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway')
+            ->setConstructorArgs(array($configurationMock, $curlMock, $smsComposerMock))
+            ->getMockForAbstractClass();
+
+        $stub->expects($this->any())
+            ->method('getGatewayConfiguration')
+            ->will($this->returnValue($gatewayConfigurationMock));
+
+        if ($throwException) {
+            $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException');
+        }
+
+        $this->assertEquals($expected, $stub->getAccountBalance());
     }
 }

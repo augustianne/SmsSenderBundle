@@ -68,8 +68,17 @@ class SemaphorePriorityDefaultNoBackupSenderTest extends \PHPUnit_Framework_Test
 
         $smsSender = $this->container->get('yan_sms_sender.sender.sms');
 
-        // $sent = $smsSender->send($sms);
-        // $this->assertTrue($sent);
+        // $this->assertTrue($smsSender->send($sms));
         $this->markTestSkipped();
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::getAccountBalance
+     */
+    public function testGetAccountBalance()
+    {
+        $smsSender = $this->container->get('yan_sms_sender.sender.sms');
+
+        $this->assertTrue(is_numeric($smsSender->getAccountBalance()));
     }
 }

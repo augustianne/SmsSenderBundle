@@ -24,7 +24,7 @@ use Yan\Bundle\SmsSenderBundle\Gateway\SmsGateway;
 class EngageSparkSmsGateway extends SmsGateway
 {
     protected $url = 'https://start.engagespark.com/api/v1/messages/sms';
-    protected $creditUrl = 'https://start.engagespark.com/api/v1/%s/available-balance';
+    protected $creditUrl = 'https://start.engagespark.com/api/v1/organizations/%s/available-balance';
     protected $name = 'ENGAGE_SPARK';
 
     /**
@@ -77,8 +77,7 @@ class EngageSparkSmsGateway extends SmsGateway
             sprintf($this->getCreditUrl(), $gatewayConfiguration->getOrganizationId()),
             array(),
             array(
-                'Key: Authorization',
-                sprintf('Value: Token %s', $gatewayConfiguration->getApiKey())
+                sprintf('Authorization: Token %s', $gatewayConfiguration->getApiKey())
             )
         );
         
@@ -88,11 +87,11 @@ class EngageSparkSmsGateway extends SmsGateway
             throw new DeliveryFailureException('Request sending failed.');
         }
 
-        if (!isset($json['credit_balance'])) {
+        if (!isset($json['balance'])) {
             throw new DeliveryFailureException('Request sending failed.');
         }
 
-        return $json['credit_balance'];
+        return $json['balance'];
     }
 
     /**
