@@ -451,4 +451,130 @@ class SmsSenderTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException');
         $sut->getAccountBalance($smsMock);
     }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SmsSender::getAccountBalance
+     */
+    public function testGetAccountBalanceDefaultGatewayThrowsDeliveryFailureExceptionBackupThrowsDeliveryFailureExceptionCatchesSmsSenderException()
+    {
+        $smsMock = $this->getSmsMock();
+
+        $configurationMock = $this->getConfigurationMock();
+        
+        $smsGatewayProvider = $this->getSmsGatewayProviderMock();
+        $smsGatewayProvider->expects($this->any())
+            ->method('getDefaultGateway')
+            ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException()));
+
+        $gatewayMocks = $this->getGatewayMocks();
+        $backupGateway = $gatewayMocks['ENGAGE_SPARK'];
+        $backupGateway->expects($this->any())
+            ->method('getAccountBalance')
+            ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException()));
+
+        $smsGatewayProvider->expects($this->any())
+            ->method('getBackupGateway')
+            ->will($this->returnValue($backupGateway));
+
+        $sut = new SmsSender($configurationMock, $smsGatewayProvider);
+
+        $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\SmsSenderException');
+        $sut->getAccountBalance($smsMock);
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SmsSender::getAccountBalance
+     */
+    public function testGetAccountBalanceDefaultGatewayThrowsGatewayNotFoundExceptionBackupThrowsGatewayNotFoundExceptionCatchesSmsSenderException()
+    {
+        $smsMock = $this->getSmsMock();
+
+        $configurationMock = $this->getConfigurationMock();
+        
+        $smsGatewayProvider = $this->getSmsGatewayProviderMock();
+        $smsGatewayProvider->expects($this->any())
+            ->method('getDefaultGateway')
+            ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\GatewayNotFoundException()));
+
+        $gatewayMocks = $this->getGatewayMocks();
+        $backupGateway = $gatewayMocks['ENGAGE_SPARK'];
+        $backupGateway->expects($this->any())
+            ->method('getAccountBalance')
+            ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\GatewayNotFoundException()));
+
+        $smsGatewayProvider->expects($this->any())
+            ->method('getBackupGateway')
+            ->will($this->returnValue($backupGateway));
+
+        $sut = new SmsSender($configurationMock, $smsGatewayProvider);
+
+        $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\SmsSenderException');
+        $sut->getAccountBalance($smsMock);
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SmsSender::send
+     */
+    public function testSendDefaultGatewayThrowsDeliveryFailureExceptionBackupThrowsDeliveryFailureExceptionCatchesSmsSenderException()
+    {
+        $smsMock = $this->getSmsMock();
+
+        $configurationMock = $this->getConfigurationMock();
+        $configurationMock->expects($this->any())
+             ->method('isDeliveryEnabled')
+             ->will($this->returnValue(true));
+        
+        $smsGatewayProvider = $this->getSmsGatewayProviderMock();
+        $smsGatewayProvider->expects($this->any())
+            ->method('getDefaultGateway')
+            ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException()));
+
+        $gatewayMocks = $this->getGatewayMocks();
+        $backupGateway = $gatewayMocks['ENGAGE_SPARK'];
+        $backupGateway->expects($this->any())
+            ->method('send')
+            ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\DeliveryFailureException()));
+
+        $smsGatewayProvider->expects($this->any())
+            ->method('getBackupGateway')
+            ->will($this->returnValue($backupGateway));
+
+        $sut = new SmsSender($configurationMock, $smsGatewayProvider);
+
+        $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\SmsSenderException');
+        $sut->send($smsMock);
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SmsSender::send
+     */
+    public function testSendDefaultGatewayThrowsGatewayNotFoundExceptionBackupThrowsGatewayNotFoundExceptionCatchesSmsSenderException()
+    {
+        $smsMock = $this->getSmsMock();
+
+        $configurationMock = $this->getConfigurationMock();
+        $configurationMock->expects($this->any())
+             ->method('isDeliveryEnabled')
+             ->will($this->returnValue(true));
+        
+        $smsGatewayProvider = $this->getSmsGatewayProviderMock();
+        $smsGatewayProvider->expects($this->any())
+            ->method('getDefaultGateway')
+            ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\GatewayNotFoundException()));
+
+        $gatewayMocks = $this->getGatewayMocks();
+        $backupGateway = $gatewayMocks['ENGAGE_SPARK'];
+        $backupGateway->expects($this->any())
+            ->method('send')
+            ->will($this->throwException(new \Yan\Bundle\SmsSenderBundle\Exception\GatewayNotFoundException()));
+
+        $smsGatewayProvider->expects($this->any())
+            ->method('getBackupGateway')
+            ->will($this->returnValue($backupGateway));
+
+        $sut = new SmsSender($configurationMock, $smsGatewayProvider);
+
+        $this->setExpectedException('\Yan\Bundle\SmsSenderBundle\Exception\SmsSenderException');
+        $sut->send($smsMock);
+    }
 }

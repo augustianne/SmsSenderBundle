@@ -11,29 +11,19 @@
 
 namespace Yan\Bundle\SmsSenderBundle\Exception;
 
-use Yan\Bundle\SmsSenderBundle\Exception\SmsSenderException;
+use \Exception;
 
 /**
- * Exception for when sms delivery fails
+ * Exception for when an sms sender is not defined
  *
  * @author  Yan Barreta
  * @version dated: August 9, 2018
  */
 
-class DeliveryFailureException extends SmsSenderException
+class SmsSenderException extends Exception
 {
-
-	private $json = null;
-
-	public function __construct($message="Request sending failed", $json=array())
+	public function __construct($message="Sms sender exception")
 	{
-		$this->json = $json;
 		parent::__construct($message);
 	}
-
-	public function getJsonResult()
-	{
-		return $this->json;
-	}
-
 }

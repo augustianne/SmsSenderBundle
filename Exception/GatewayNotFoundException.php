@@ -11,7 +11,7 @@
 
 namespace Yan\Bundle\SmsSenderBundle\Exception;
 
-use \Exception;
+use Yan\Bundle\SmsSenderBundle\Exception\SmsSenderException;
 
 /**
  * Exception for when an sms sender is not defined
@@ -20,11 +20,8 @@ use \Exception;
  * @version dated: August 9, 2018
  */
 
-class GatewayNotFoundException extends Exception
+class GatewayNotFoundException extends SmsSenderException
 {
-
-	private $json = null;
-
 	public function __construct($message="Gateway not found.")
 	{
 		parent::__construct($message);

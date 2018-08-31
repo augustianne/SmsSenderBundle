@@ -11,7 +11,7 @@
 
 namespace Yan\Bundle\SmsSenderBundle\Exception;
 
-use \Exception;
+use Yan\Bundle\SmsSenderBundle\Exception\SmsSenderException;
 
 /**
  * Exception for when an sms sender is not defined
@@ -20,10 +20,8 @@ use \Exception;
  * @version dated: August 13, 2018
  */
 
-class InvalidGatewayParameterException extends Exception
+class InvalidGatewayParameterException extends SmsSenderException
 {
-
-	private $json = null;
 
 	public function __construct($message="Invalid gateway")
 	{
