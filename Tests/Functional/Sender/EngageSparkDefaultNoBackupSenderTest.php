@@ -87,8 +87,8 @@ class EngageSparkDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestCase
 
         $smsSender = $this->container->get('yan_sms_sender.sender.sms');
 
-        // $this->assertTrue($smsSender->send($sms));
-        $this->markTestSkipped();
+        $this->assertTrue($smsSender->send($sms));
+        // $this->markTestSkipped();
     }
 
     /**
