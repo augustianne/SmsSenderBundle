@@ -54,6 +54,24 @@ class EngageSparkDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function getTestSendLongMessages()
+    {
+        return array(
+            array(
+                array('09173149060'), 'Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages',
+            ),
+            array(
+                array('09173149060'), 'Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph!',
+            ),
+            array(
+                array('09173149060'), 'Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages',
+            ),
+            array(
+                array('09173149060'), 'Fr AutoDeal: Great news, your listing has been approved and is now live http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages on AutoDeal.com.ph! View your listing at',
+            )
+        );
+    }
+
     /**
      * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::send
      * @dataProvider getMessageDefaultSenderData
@@ -62,6 +80,25 @@ class EngageSparkDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestCase
     {
         $sms = new Sms();
         $sms->setContent('Engage Spark: '.$content);
+
+        foreach ($numbers as $number) {
+            $sms->addRecipient($number);
+        }
+
+        $smsSender = $this->container->get('yan_sms_sender.sender.sms');
+
+        // $this->assertTrue($smsSender->send($sms));
+        $this->markTestSkipped();
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::send
+     * @dataProvider getTestSendLongMessages
+     */
+    public function testSendLongMessagesWithoutTruncation($numbers, $content)
+    {
+        $sms = new Sms();
+        $sms->setContent($content);
 
         foreach ($numbers as $number) {
             $sms->addRecipient($number);
