@@ -137,19 +137,20 @@ class SmsComposerTest extends \PHPUnit_Framework_TestCase
             array(
                 'Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages',
                 array(
-                    '2/2 http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages',
-                    '1/2 Sent to: 09173149060. Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at'
+                    '2/2 your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages',
+                    '1/2 Recipients: 09173149060. Gateway: ENGAGE_SPARK. Message: Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View'
                 )
             ),
             array(
                 'Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph!',
-                array('Sent to: 09173149060. Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph!')
+                array('Recipients: 09173149060. Gateway: ENGAGE_SPARK. Message: Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph!')
             ),
             array(
                 'Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages',
                 array(
-                    '2/2 http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages',
-                    '1/2 Sent to: 09173149060. Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at'
+                    '3/3 http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages',
+                    '2/3 your listing at',
+                    '1/3 Recipients: 09173149060. Gateway: ENGAGE_SPARK. Message: Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View'
                 )
             ),
             array(
@@ -157,7 +158,7 @@ class SmsComposerTest extends \PHPUnit_Framework_TestCase
                 array(
                     '3/3 on AutoDeal.com.ph! View your listing at',
                     '2/3 http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages',
-                    '1/3 Sent to: 09173149060. Fr AutoDeal: Great news, your listing has been approved and is now live'
+                    '1/3 Recipients: 09173149060. Gateway: ENGAGE_SPARK. Message: Fr AutoDeal: Great news, your listing has been approved and is now live'
                 )
             )
         );
@@ -169,23 +170,23 @@ class SmsComposerTest extends \PHPUnit_Framework_TestCase
             array(
                 'Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages',
                 array(
-                    'Sent to: 09173149060. Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages'
+                    'Recipients: 09173149060. Gateway: ENGAGE_SPARK. Message: Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages'
                 )
             ),
             array(
                 'Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph!',
-                array('Sent to: 09173149060. Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph!')
+                array('Recipients: 09173149060. Gateway: ENGAGE_SPARK. Message: Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph!')
             ),
             array(
                 'Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages',
                 array(
-                    'Sent to: 09173149060. Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages'
+                    'Recipients: 09173149060. Gateway: ENGAGE_SPARK. Message: Fr AutoDeal: Great news, your listing has been approved and is now live on AutoDeal.com.ph! View your listing at http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages'
                 )
             ),
             array(
                 'Fr AutoDeal: Great news, your listing has been approved and is now live http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages on AutoDeal.com.ph! View your listing at',
                 array(
-                    'Sent to: 09173149060. Fr AutoDeal: Great news, your listing has been approved and is now live http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages on AutoDeal.com.ph! View your listing at'
+                    'Recipients: 09173149060. Gateway: ENGAGE_SPARK. Message: Fr AutoDeal: Great news, your listing has been approved and is now live http://www.staging3.autotaging3.autodeal.com.ph/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages/app_dev.php/account/messages on AutoDeal.com.ph! View your listing at'
                 )
             )
         );
@@ -243,6 +244,10 @@ class SmsComposerTest extends \PHPUnit_Framework_TestCase
             ->method('getTestDeliveryNumbers')
             ->will($this->returnValue(array('09173149060')));
 
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getApiName')
+            ->will($this->returnValue('ENGAGE_SPARK'));
+
         $stub->expects($this->any())
              ->method('formatRecipientsForSending')
              ->will($this->returnValue('09173149060'));
@@ -273,6 +278,10 @@ class SmsComposerTest extends \PHPUnit_Framework_TestCase
             ->method('getTestDeliveryNumbers')
             ->will($this->returnValue(array('09173149060')));
 
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getApiName')
+            ->will($this->returnValue('ENGAGE_SPARK'));
+            
         $gatewayConfigurationMock->expects($this->any())
             ->method('isTruncateSms')
             ->will($this->returnValue(true));

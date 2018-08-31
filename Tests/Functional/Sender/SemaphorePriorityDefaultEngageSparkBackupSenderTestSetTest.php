@@ -47,9 +47,10 @@ class SemaphorePriorityDefaultEngageSparkBackupSenderTestSetTest extends \PHPUni
     {
         return array(
             array(array('09173149060'), 'Test message 1.'),
-            // array(array('09173149060', '09173149060', '09173222385'), 'Test message 2.'),
-            // array(array('09173149060', '09173222385'), 'Test message 3.'),
-            // array(array('09173149060', '09173149060'), 'Test message 4.')
+            array(array('09279590804'), 'Test message 1.'),
+            array(array('09173149060', '09173149060', '09279590804'), 'Test message 2.'),
+            array(array('09173149060', '09279590804'), 'Test message 3.'),
+            array(array('09173149060', '09173149060'), 'Test message 4.')
         );
     }
 
@@ -68,7 +69,7 @@ class SemaphorePriorityDefaultEngageSparkBackupSenderTestSetTest extends \PHPUni
 
         $smsSender = $this->container->get('yan_sms_sender.sender.sms');
 
-        // $this->assertTrue($smsSender->send($sms));
-        $this->markTestSkipped();
+        $this->assertTrue($smsSender->send($sms));
+        // $this->markTestSkipped();
     }
 }
