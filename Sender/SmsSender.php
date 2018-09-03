@@ -50,15 +50,17 @@ class SmsSender
             return;
         }
 
+        $clonedSms = clone($sms);
+
         try {
             $defaultSmsGateway = $this->smsGatewayProvider->getDefaultGateway();
             return $defaultSmsGateway->send($sms);
         }
         catch (GatewayNotFoundException $e) {
-            return $this->sendViaBackupGateway($sms);
+            return $this->sendViaBackupGateway($clonedSms);
         }
         catch (DeliveryFailureException $e) {
-            return $this->sendViaBackupGateway($sms);
+            return $this->sendViaBackupGateway($clonedSms);
         }
     }
 
