@@ -67,4 +67,9 @@ class GatewayConfiguration
     {
         return $this->parameters['default_country_code'];
     }
+
+    public function getPricePerSms()
+    {
+        return $this->parameters['price_per_sms'];
+    }
 }

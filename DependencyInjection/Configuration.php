@@ -90,6 +90,7 @@ class Configuration implements ConfigurationInterface
                         ->thenInvalid('The %s recipient type is not supported')
                     ->end()
                 ->end()
+                ->scalarNode('price_per_sms')->end()
             ->end()
         ;
 

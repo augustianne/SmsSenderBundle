@@ -91,8 +91,8 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
     public function getTestGetAccountBalance()
     {
         return array(
-            array('{"balance": "99.92"}', 99.92, false),
-            array('{"balance": "2000"}', 2000, false),
+            array('{"balance": "99.92"}', 6661, false),
+            array('{"balance": "2000"}', 133333, false),
             array('{"balances": "99.92"}', 2000, true)
         );
     }
@@ -274,7 +274,11 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
              ->method('getApiKey')
              ->will($this->returnValue('API_KEY'));
 
-         $curlMock = $this->getCurlMock();
+        $gatewayConfigurationMock->expects($this->any())
+             ->method('getPricePerSms')
+             ->will($this->returnValue(0.015));
+
+        $curlMock = $this->getCurlMock();
         $curlMock->expects($this->any())
             ->method('get')
             ->will($this->returnValue($result));

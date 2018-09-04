@@ -112,7 +112,7 @@ class YanSmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Yan/Bundle/SemaphoreSmsBundle/DependencyInjection/SemaphoreSmsExtension::load
+     * @covers Yan/Bundle/SmsSenderBundle/DependencyInjection/SemaphoreSmsExtension::load
      */
     public function testDefaultsValues()
     {
@@ -144,7 +144,7 @@ class YanSmsSenderExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Yan/Bundle/SemaphoreSmsBundle/DependencyInjection/SemaphoreSmsExtension::load
+     * @covers Yan/Bundle/SmsSenderBundle/DependencyInjection/SemaphoreSmsExtension::load
      */
     public function testSenderValues()
     {

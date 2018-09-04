@@ -91,6 +91,10 @@ class EngageSparkSmsGateway extends SmsGateway
             throw new DeliveryFailureException('Request sending failed.');
         }
 
+        if (!empty($gatewayConfiguration->getPricePerSms())) {
+            return round($json['balance'] / $gatewayConfiguration->getPricePerSms());
+        }
+        
         return $json['balance'];
     }
 
