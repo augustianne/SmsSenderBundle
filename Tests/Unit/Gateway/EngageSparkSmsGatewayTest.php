@@ -78,7 +78,7 @@ class EngageSparkSmsGatewayTest extends \PHPUnit_Framework_TestCase
     public function getTestHandleResult()
     {
         return array(
-            array(array(array('status' => 'Success')), false),
+            array(array(array('status' => 'Success')), true),
             array("", false),
             array(null, false),
             array(array('detail' => 'Authentication credentials were not provided.'), true),

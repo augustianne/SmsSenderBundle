@@ -29,6 +29,7 @@ class SmsSender
 {
     protected $config;
     protected $smsGatewayProvider;
+    protected $usedGateway;
     
     public function __construct(ConfigurationAccessor $config, SmsGatewayProvider $smsGatewayProvider)
     {
@@ -54,6 +55,7 @@ class SmsSender
 
         try {
             $defaultSmsGateway = $this->smsGatewayProvider->getDefaultGateway();
+            $this->usedGateway = $defaultSmsGateway;
             return $defaultSmsGateway->send($sms);
         }
         catch (GatewayNotFoundException $e) {
@@ -76,6 +78,7 @@ class SmsSender
     {
         try {
             $gateway = $this->smsGatewayProvider->getBackupGateway();
+            $this->usedGateway = $gateway;
             return $gateway->send($sms);
         }
         catch (GatewayNotFoundException $e) {
@@ -97,6 +100,7 @@ class SmsSender
     {
         try {
             $defaultSmsGateway = $this->smsGatewayProvider->getDefaultGateway();
+            $this->usedGateway = $defaultSmsGateway;
             return $defaultSmsGateway->getAccountBalance();
         }
         catch (GatewayNotFoundException $e) {
@@ -111,6 +115,7 @@ class SmsSender
     {
         try {
             $gateway = $this->smsGatewayProvider->getBackupGateway();
+            $this->usedGateway = $gateway;
             return $gateway->getAccountBalance();
         }
         catch (GatewayNotFoundException $e) {
@@ -119,5 +124,10 @@ class SmsSender
         catch (DeliveryFailureException $e) {
             throw $e;
         }
+    }
+
+    public function getUsedGateway()
+    {
+        return $this->usedGateway;
     }
 }
