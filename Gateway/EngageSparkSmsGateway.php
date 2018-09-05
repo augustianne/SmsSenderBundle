@@ -124,7 +124,9 @@ class EngageSparkSmsGateway extends SmsGateway
 
             if (isset($json['error'])) {
                 throw new DeliveryFailureException($json['error'], $json);
-            }    
+            }
+
+            throw new DeliveryFailureException('Request sending failed', $json);    
         }
     }
 }
