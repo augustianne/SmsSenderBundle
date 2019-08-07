@@ -47,9 +47,9 @@ class EngageSparkTestDeliverySetTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array(array('09173149060'), 'Test message 1.'),
-            array(array('09279590804'), 'Test message 1.'),
-            array(array('09173149060', '09173149060', '09279590804'), 'Test message 2.'),
-            array(array('09173149060', '09279590804'), 'Test message 3.'),
+            array(array('09281866773'), 'Test message 1.'),
+            array(array('09173149060', '09173149060', '09281866773'), 'Test message 2.'),
+            array(array('09173149060', '09281866773'), 'Test message 3.'),
             array(array('09173149060', '09173149060'), 'Test message 4.')
         );
     }

@@ -190,6 +190,27 @@ class SmsComposerTest extends \PHPUnit_Framework_TestCase
                 )
             )
         );
+    }
+
+    public function getTestCreateSmsPerRecipientData()
+    {
+        return array(
+            array(
+                'This is a test message under 155 chars sent to 2 recipients',
+                array('09173149060','09281866773'),
+                array('09173149060','09281866773')
+            ),
+            array(
+                'This is a test message under 155 chars sent to 1 recipient',
+                array('09173149060'),
+                array('09173149060')
+            ),
+            array(
+                'This is a test message under 155 chars sent to 3 recipients',
+                array('09173149060','09281866773','09281866773'),
+                array('09173149060','09281866773')
+            ),
+        );
     }  
 
     /**
@@ -296,6 +317,30 @@ class SmsComposerTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($sms->getFrom(), $iSms->getFrom());
             $this->assertTrue($sms->getRecipients() == $iSms->getRecipients());
             $this->assertEquals($expected[$key], $iSms->getContent());
+        }
+    }
+
+    /**
+     * @covers Yan/Bundle/SenderSmsBundle/Composer/SmsComposer::createSmsPerRecipient
+     * @dataProvider getTestCreateSmsPerRecipientData
+     */
+    public function testCreateSmsPerRecipientSingleSms($message, $numbers, $expected)
+    {
+        $sms = new Sms();
+        $sms->setFrom('AUTODEAL');
+        $sms->setRecipients($numbers);
+        $sms->setContent($message);
+
+        $stub = $this->getStubForTest();
+        $actual = $stub->createSmsPerRecipient(array($sms));
+
+        foreach ($actual as $key => $iSms) {
+            $recipients = $iSms->getRecipients();
+            $this->assertEquals($sms->getFrom(), $iSms->getFrom());
+            $this->assertEquals($sms->getContent(), $iSms->getContent());
+            
+            $this->assertTrue(1 == count($recipients));
+            $this->assertEquals($expected[$key], implode("", $recipients));
         }
     }
 }

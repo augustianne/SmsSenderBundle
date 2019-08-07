@@ -47,7 +47,7 @@ abstract class SmsComposer
      * @param Sms
      * @return Array of Smses
      */ 
-    public function compose(Sms $sms, GatewayConfiguration $gatewayConfiguration)
+    public function compose(Sms $sms, GatewayConfiguration $gatewayConfiguration, $splitRecipients=false)
     {
         $testDeliveryNumbers = $gatewayConfiguration->getTestDeliveryNumbers();
 
@@ -62,11 +62,15 @@ abstract class SmsComposer
 
         $smses = array($sms);
 
-        if (!$gatewayConfiguration->isTruncateSms()) {
-            return $smses;    
+        if ($gatewayConfiguration->isTruncateSms()) {
+            $smses = $this->constructSmses($sms);
         }    
         
-        return $this->constructSmses($sms);
+        if ($splitRecipients) {
+            $smses = $this->createSmsPerRecipient($smses);
+        }
+
+        return $smses;
     }
 
     /**
@@ -112,7 +116,7 @@ abstract class SmsComposer
      * that has content under 155 characters
      * 
      * @param Sms
-     * @return Array of Smss
+     * @return Sms[]
      */ 
     public function constructSmses(Sms $sms) 
     {   
@@ -135,6 +139,30 @@ abstract class SmsComposer
         }
 
         return array_reverse($smses);
+    }
+
+    /**
+     * Accepts array of sms and creates individual sms objects per recipient
+     * 
+     * @param Sms[]
+     * @return Sms[]
+     */ 
+    public function createSmsPerRecipient($smses) 
+    {   
+        $splitSmses = array();
+        foreach ($smses as $sms) {
+
+            $recipients = $sms->getRecipients();
+
+            foreach ($recipients as $recipient) {
+                $clonedSms = clone ($sms);
+                $clonedSms->clearRecipients();
+                $clonedSms->addRecipient($recipient);
+                $splitSmses[] = $clonedSms;
+            }
+        }
+
+        return $splitSmses;
     }
 
     /**

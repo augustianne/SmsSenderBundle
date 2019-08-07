@@ -26,14 +26,14 @@ use Symfony\Component\Filesystem\Filesystem;
  * @author  Yan Barreta
  * @version dated: April 30, 2015 3:55:29 PM
  */
-class EngageSparkDefaultSemaphorePriorityBackupSenderTestSetTest extends \PHPUnit_Framework_TestCase
+class EngageSparkPhoneNumberTestDeliverySetTest extends \PHPUnit_Framework_TestCase
 {
     private $container;
     private $kernel;
 
     public function setUp()
     {
-        $this->kernel = new AppKernel('semaphore_priority_default_engage_spark_backup_test', true);
+        $this->kernel = new AppKernel('engage_spark_phone_number_test_delivery_set', true);
         $this->kernel->boot();
         
         $this->container = $this->kernel->getContainer();
@@ -46,7 +46,7 @@ class EngageSparkDefaultSemaphorePriorityBackupSenderTestSetTest extends \PHPUni
     public function getMessageDefaultSenderData()
     {
         return array(
-            array(array('09173149060'), 'Test message 1.'),
+            array(array('09281866773'), 'Test message 1.'),
             array(array('09281866773'), 'Test message 1.'),
             array(array('09173149060', '09173149060', '09281866773'), 'Test message 2.'),
             array(array('09173149060', '09281866773'), 'Test message 3.'),
@@ -61,7 +61,7 @@ class EngageSparkDefaultSemaphorePriorityBackupSenderTestSetTest extends \PHPUni
     public function testSend($numbers, $content)
     {
         $sms = new Sms();
-        $sms->setContent('With backup: '.$content);
+        $sms->setContent('Engage Spark Phone Number: '.$content);
 
         foreach ($numbers as $number) {
             $sms->addRecipient($number);

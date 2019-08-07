@@ -26,14 +26,14 @@ use Symfony\Component\Filesystem\Filesystem;
  * @author  Yan Barreta
  * @version dated: April 30, 2015 3:55:29 PM
  */
-class SemaphorePriorityDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestCase
+class EngageSparkPhoneNumberDefaultNoBackupSenderTest extends \PHPUnit_Framework_TestCase
 {
     private $container;
     private $kernel;
 
     public function setUp()
     {
-        $this->kernel = new AppKernel('semaphore_priority_default_no_backup', true);
+        $this->kernel = new AppKernel('engage_spark_phone_number_default_no_backup', true);
         $this->kernel->boot();
         
         $this->container = $this->kernel->getContainer();
@@ -47,10 +47,10 @@ class SemaphorePriorityDefaultNoBackupSenderTest extends \PHPUnit_Framework_Test
     {
         return array(
             array(array('09173149060'), 'Test message 1.'),
-            array(array('09281866773'), 'Test message 1.'),
-            array(array('09173149060', '09173149060', '09281866773'), 'Test message 2.'),
-            array(array('09173149060', '09281866773'), 'Test message 3.'),
-            array(array('09173149060', '09173149060'), 'Test message 4.')
+            // array(array('09281866773'), 'Test message 1.'),
+            // array(array('09173149060', '09173149060', '09281866773'), 'Test message 2.'),
+            // array(array('09173149060', '09281866773'), 'Test message 3.'),
+            // array(array('09173149060', '09173149060'), 'Should only be sent once.')
         );
     }
 
@@ -79,7 +79,7 @@ class SemaphorePriorityDefaultNoBackupSenderTest extends \PHPUnit_Framework_Test
     public function testSend($numbers, $content)
     {
         $sms = new Sms();
-        $sms->setContent('Semaphore Priority: '.$content);
+        $sms->setContent('Engage Spark: '.$content);
 
         foreach ($numbers as $number) {
             $sms->addRecipient($number);
@@ -91,32 +91,32 @@ class SemaphorePriorityDefaultNoBackupSenderTest extends \PHPUnit_Framework_Test
         // $this->markTestSkipped();
     }
 
-    /**
-     * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::send
-     * @dataProvider getTestSendLongMessages
-     */
-    public function testSendLongMessagesWithoutTruncation($numbers, $content)
-    {
-        $sms = new Sms();
-        $sms->setContent($content);
+    // /**
+    //  * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::send
+    //  * @dataProvider getTestSendLongMessages
+    //  */
+    // public function testSendLongMessagesWithoutTruncation($numbers, $content)
+    // {
+    //     $sms = new Sms();
+    //     $sms->setContent($content);
 
-        foreach ($numbers as $number) {
-            $sms->addRecipient($number);
-        }
+    //     foreach ($numbers as $number) {
+    //         $sms->addRecipient($number);
+    //     }
 
-        $smsSender = $this->container->get('yan_sms_sender.sender.sms');
+    //     $smsSender = $this->container->get('yan_sms_sender.sender.sms');
 
-        $this->assertTrue($smsSender->send($sms));
-        // $this->markTestSkipped();
-    }
-    
-    /**
-     * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::getAccountBalance
-     */
-    public function testGetAccountBalance()
-    {
-        $smsSender = $this->container->get('yan_sms_sender.sender.sms');
+    //     $this->assertTrue($smsSender->send($sms));
+    //     // $this->markTestSkipped();
+    // }
 
-        $this->assertTrue(is_numeric($smsSender->getAccountBalance()));
-    }
+    // /**
+    //  * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::getAccountBalance
+    //  */
+    // public function testGetAccountBalance()
+    // {
+    //     $smsSender = $this->container->get('yan_sms_sender.sender.sms');
+
+    //     $this->assertTrue(is_numeric($smsSender->getAccountBalance()));
+    // }
 }

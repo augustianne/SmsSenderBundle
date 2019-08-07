@@ -70,7 +70,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('api_name')
                     ->validate()
-                        ->ifNotInArray(array('ENGAGE_SPARK', 'SEMAPHORE_PRIORITY', 'SEMAPHORE_REGULAR'))
+                        ->ifNotInArray(array('ENGAGE_SPARK', 'ENGAGE_SPARK_PHONE_NUMBER', 'SEMAPHORE_PRIORITY', 'SEMAPHORE_REGULAR'))
                         ->thenInvalid('The %s sms sender is not supported')
                     ->end()
                 ->end()
