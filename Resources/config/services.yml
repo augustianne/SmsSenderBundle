@@ -16,6 +16,11 @@ services:
         arguments:
             config: '@yan_sms_sender.tools.accessor.configuration'
 
+    yan_sms_sender.composer.sms.engage_spark_phone_number:
+        class: Yan\Bundle\SmsSenderBundle\Composer\EngageSparkPhoneNumberSmsComposer
+        arguments:
+            config: '@yan_sms_sender.tools.accessor.configuration'
+
     yan_sms_sender.composer.sms.semaphore:
         class: Yan\Bundle\SmsSenderBundle\Composer\SemaphoreSmsComposer
         arguments:
@@ -34,6 +39,13 @@ services:
             config: '@yan_sms_sender.tools.accessor.configuration'
             curl: '@yan_sms_sender.tools.request.curl'
             smsComposer: '@yan_sms_sender.composer.sms.engage_spark'
+
+    yan_sms_sender.gateway.sms.engage_spark_phone_number:
+        class: Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkPhoneNumberSmsGateway
+        arguments:
+            config: '@yan_sms_sender.tools.accessor.configuration'
+            curl: '@yan_sms_sender.tools.request.curl'
+            smsComposer: '@yan_sms_sender.composer.sms.engage_spark_phone_number'
 
     yan_sms_sender.gateway.sms.semaphore:
         class: Yan\Bundle\SmsSenderBundle\Gateway\SemaphoreSmsGateway
@@ -62,6 +74,7 @@ services:
             config: '@yan_sms_sender.tools.accessor.configuration'
             smsGateways:
                 - '@yan_sms_sender.gateway.sms.engage_spark'
+                - '@yan_sms_sender.gateway.sms.engage_spark_phone_number'
                 - '@yan_sms_sender.gateway.sms.semaphore.regular'
                 - '@yan_sms_sender.gateway.sms.semaphore.priority'
 

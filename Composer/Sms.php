@@ -40,6 +40,7 @@ class Sms
     /**
      * Sets an array of recipients the sms will be sent to
      *
+     * @param Array
      * @return void
      */ 
     public function setRecipients($recipients)
@@ -55,6 +56,17 @@ class Sms
     public function getRecipients()
     {
         return $this->recipients;
+    }
+
+    /**
+     * Clears recipients list
+     *
+     * @param void
+     * @return void
+     */ 
+    public function clearRecipients()
+    {
+        $this->recipients = array();
     }
 
     /**
