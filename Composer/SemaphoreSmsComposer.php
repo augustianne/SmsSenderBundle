@@ -39,12 +39,14 @@ class SemaphoreSmsComposer extends SmsComposer
     {
         $formattedRecipients = $this->formatRecipientsForSending($sms, $gatewayConfiguration);
         $formattedMessage = $sms->getContent();
+
+        $sender = (!empty($sms->getFrom()) ? $sms->getFrom() : $gatewayConfiguration->getSenderName());
         
         $params = array(
             'apikey' => $gatewayConfiguration->getApiKey(),
             'number' => $formattedRecipients,
             'message' => $formattedMessage,
-            'sendername' => $gatewayConfiguration->getSenderName()
+            'sendername' => $sender
         );
 
         $this->validateRequiredParameters($params);

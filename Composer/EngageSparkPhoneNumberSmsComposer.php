@@ -38,11 +38,12 @@ class EngageSparkPhoneNumberSmsComposer extends EngageSparkSmsComposer
     public function composeSmsParameters(Sms $sms, GatewayConfiguration $gatewayConfiguration)
     {
         $formattedMessage = $sms->getContent();
+        $sender = (!empty($sms->getFrom()) ? $sms->getFrom() : $gatewayConfiguration->getSenderName());
         
         $params = array(
             'orgId' => $gatewayConfiguration->getOrganizationId(),
             'to' => implode("", $sms->getRecipients()),
-            'from' => $gatewayConfiguration->getSenderName(),
+            'from' => $sender,
             'message' => $formattedMessage
         );
         

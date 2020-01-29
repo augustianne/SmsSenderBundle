@@ -214,6 +214,15 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function getTestSenderName()
+    {
+        return array(
+            array('THIS_SENDER', 'DEFAULT_SENDER', false),
+            array(null, 'DEFAULT_SENDER', true),
+            array('', 'DEFAULT_SENDER', true)
+        );
+    } 
+
     /**
      * @covers Yan/Bundle/SenderSmsBundle/Composer/SmsComposer::splitSms
      * @dataProvider getTestInternationalizeNumbersCorrectType
@@ -354,5 +363,76 @@ class EngageSparkSmsComposerTest extends \PHPUnit_Framework_TestCase
         else {
             $this->assertEquals($expected, $sut->composeSmsParameters($smsMock, $gatewayConfigurationMock));
         }
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsComposer::composeSmsParameters
+     * @dataProvider getTestSenderName
+     */
+    public function testSenderName($senderName, $defaultSender, $useDefaultSender)
+    {
+        $sms = new Sms();
+        $sms->setFrom($senderName);
+        $sms->setContent('Content');
+        $sms->addRecipient('09173149060');
+
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getSenderName')
+            ->will($this->returnValue($defaultSender));
+
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getApiKey')
+            ->will($this->returnValue('APIKEY'));
+
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getRecipientType')
+            ->will($this->returnValue('mobile_number'));
+
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getOrganizationId')
+            ->will($this->returnValue('ORGANIZATION ID'));
+
+        $sut = new EngageSparkSmsComposer($this->getConfigurationMock());
+
+        $params = $sut->composeSmsParameters($sms, $gatewayConfigurationMock);
+        if ($useDefaultSender) {
+            $this->assertEquals($params['sender_id'], $defaultSender);
+        }
+        else {
+            $this->assertEquals($params['sender_id'], $senderName);
+        }
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/EngageSparkSmsComposer::composeSmsParameters
+     */
+    public function testNoSenderName()
+    {
+        $sms = new Sms();
+        $sms->setContent('Content');
+        $sms->addRecipient('09173149060');
+
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getSenderName')
+            ->will($this->returnValue('DEFAULT SENDER'));
+
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getApiKey')
+            ->will($this->returnValue('APIKEY'));
+
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getRecipientType')
+            ->will($this->returnValue('mobile_number'));
+
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getOrganizationId')
+            ->will($this->returnValue('ORGANIZATION ID'));
+
+        $sut = new EngageSparkSmsComposer($this->getConfigurationMock());
+
+        $params = $sut->composeSmsParameters($sms, $gatewayConfigurationMock);
+        $this->assertEquals($params['sender_id'], 'DEFAULT SENDER');
     }
 }
