@@ -146,6 +146,15 @@ class SemaphoreSmsComposerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function getTestSenderName()
+    {
+        return array(
+            array('THIS_SENDER', 'DEFAULT_SENDER', false),
+            array(null, 'DEFAULT_SENDER', true),
+            array('', 'DEFAULT_SENDER', true)
+        );
+    }  
+
     /**
      * @covers Yan/Bundle/SenderSmsBundle/Composer/SmsComposer::splitSms
      * @dataProvider getTestInternationalizeNumbers
@@ -249,5 +258,60 @@ class SemaphoreSmsComposerTest extends \PHPUnit_Framework_TestCase
         else {
             $this->assertEquals($expected, $sut->composeSmsParameters($smsMock, $gatewayConfigurationMock));
         }
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SemaphoreSmsComposer::composeSmsParameters
+     * @dataProvider getTestSenderName
+     */
+    public function testSenderName($senderName, $defaultSender, $useDefaultSender)
+    {
+        $sms = new Sms();
+        $sms->setFrom($senderName);
+        $sms->setContent('Content');
+        $sms->addRecipient('09173149060');
+
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getSenderName')
+            ->will($this->returnValue($defaultSender));
+
+        $gatewayConfigurationMock->expects($this->any())
+             ->method('getApiKey')
+             ->will($this->returnValue('APIKEY'));
+
+        $sut = new SemaphoreSmsComposer($this->getConfigurationMock());
+
+        $params = $sut->composeSmsParameters($sms, $gatewayConfigurationMock);
+        if ($useDefaultSender) {
+            $this->assertEquals($params['sendername'], $defaultSender);
+        }
+        else {
+            $this->assertEquals($params['sendername'], $senderName);
+        }
+    }
+
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Gateway/SemaphoreSmsComposer::composeSmsParameters
+     */
+    public function testNoSenderName()
+    {
+        $sms = new Sms();
+        $sms->setContent('Content');
+        $sms->addRecipient('09173149060');
+
+        $gatewayConfigurationMock = $this->getGatewayConfigurationMock();
+        $gatewayConfigurationMock->expects($this->any())
+            ->method('getSenderName')
+            ->will($this->returnValue('DEFAULT SENDER'));
+
+        $gatewayConfigurationMock->expects($this->any())
+             ->method('getApiKey')
+             ->will($this->returnValue('APIKEY'));
+
+        $sut = new SemaphoreSmsComposer($this->getConfigurationMock());
+
+        $params = $sut->composeSmsParameters($sms, $gatewayConfigurationMock);
+        $this->assertEquals($params['sendername'], 'DEFAULT SENDER');
     }
 }

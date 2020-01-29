@@ -91,6 +91,26 @@ class EngageSparkPhoneNumberDefaultNoBackupSenderTest extends \PHPUnit_Framework
         // $this->markTestSkipped();
     }
 
+    /**
+     * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::send
+     * @dataProvider getMessageDefaultSenderData
+     */
+    public function testSetSenderSend($numbers, $content)
+    {
+        $sms = new Sms();
+        $sms->setContent('Engage Spark Phone Number: '.$content);
+        $sms->setFrom('MOTODEAL');
+
+        foreach ($numbers as $number) {
+            $sms->addRecipient($number);
+        }
+
+        $smsSender = $this->container->get('yan_sms_sender.sender.sms');
+
+        $this->assertTrue($smsSender->send($sms));
+        // $this->markTestSkipped();
+    }
+
     // /**
     //  * @covers Yan/Bundle/SmsSenderBundle/Sender/SmsSender::send
     //  * @dataProvider getTestSendLongMessages

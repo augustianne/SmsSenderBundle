@@ -38,11 +38,13 @@ class EngageSparkSmsComposer extends SmsComposer
     public function composeSmsParameters(Sms $sms, GatewayConfiguration $gatewayConfiguration)
     {
         $formattedMessage = $sms->getContent();
+
+        $sender = (!empty($sms->getFrom()) ? $sms->getFrom() : $gatewayConfiguration->getSenderName());
         
         $params = array(
             'organization_id' => $gatewayConfiguration->getOrganizationId(),
             'recipient_type' => $gatewayConfiguration->getRecipientType(),
-            'sender_id' => $gatewayConfiguration->getSenderName(),
+            'sender_id' => $sender, 
             'message' => $formattedMessage
         );
         
