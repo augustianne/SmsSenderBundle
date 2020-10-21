@@ -24,7 +24,7 @@ use Yan\Bundle\SmsSenderBundle\Gateway\EngageSparkSmsGateway;
 class EngageSparkPhoneNumberSmsGateway extends EngageSparkSmsGateway
 {
     protected $url = 'https://api.engagespark.com/v1/sms/phonenumber';
-    protected $creditUrl = 'https://start.engagespark.com/api/v1/organizations/%s/available-balance';
+    protected $creditUrl = 'https://ui-api.engagespark.com/api/v1/organizations/%s/available-balance';
     protected $name = 'ENGAGE_SPARK_PHONE_NUMBER';
 
     /**
