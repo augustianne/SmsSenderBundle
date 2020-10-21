@@ -24,7 +24,7 @@ use Yan\Bundle\SmsSenderBundle\Gateway\SmsGateway;
 class EngageSparkSmsGateway extends SmsGateway
 {
     protected $url = 'https://start.engagespark.com/api/v1/messages/sms';
-    protected $creditUrl = 'https://start.engagespark.com/api/v1/organizations/%s/available-balance';
+    protected $creditUrl = 'https://ui-api.engagespark.com/api/v1/organizations/%s/available-balance';
     protected $name = 'ENGAGE_SPARK';
 
     /**
